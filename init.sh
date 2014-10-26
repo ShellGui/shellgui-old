@@ -44,7 +44,7 @@ du -s $HOME_DIR/htdocs | grep "[0-9][0-9]*"
 then
 echo "Already have docs"
 else
-curl -L "https://github.com/ShellGui/shellgui/archive/master.zip" -o $HOME_DIR/sources/shellgui-master.zip || \
+curl -k -L "https://github.com/ShellGui/shellgui/archive/master.zip" -o $HOME_DIR/sources/shellgui-master.zip || \
 wget --no-check-certificate "https://github.com/ShellGui/shellgui/archive/master.zip" -O $HOME_DIR/sources/shellgui-master.zip
 fi
 }
@@ -55,7 +55,7 @@ if
 then
 echo "lighttpd-1.4.35.tar.gz checked"
 else
-curl -L "http://download.lighttpd.net/lighttpd/releases-1.4.x/lighttpd-1.4.35.tar.gz" -o $HOME_DIR/sources/lighttpd-1.4.35.tar.gz
+curl -k -L "http://download.lighttpd.net/lighttpd/releases-1.4.x/lighttpd-1.4.35.tar.gz" -o $HOME_DIR/sources/lighttpd-1.4.35.tar.gz
 do_downloads
 return 0
 fi
@@ -65,7 +65,7 @@ if
 then
 echo "apache_1.3.42.tar.gz checked"
 else
-curl -L "http://archive.apache.org/dist/httpd/apache_1.3.42.tar.gz" -o $HOME_DIR/sources/apache_1.3.42.tar.gz
+curl -k -L "http://archive.apache.org/dist/httpd/apache_1.3.42.tar.gz" -o $HOME_DIR/sources/apache_1.3.42.tar.gz
 do_downloads
 return 0
 fi
@@ -75,7 +75,7 @@ if
 then
 echo "jq-1.4.tar.gz checked"
 else
-curl -L "http://stedolan.github.io/jq/download/source/jq-1.4.tar.gz" -o $HOME_DIR/sources/jq-1.4.tar.gz
+curl -k -L "http://stedolan.github.io/jq/download/source/jq-1.4.tar.gz" -o $HOME_DIR/sources/jq-1.4.tar.gz
 do_downloads
 return 0
 fi
@@ -85,7 +85,7 @@ if
 then
 echo "busybox-1.22.1.tar.bz2 checked"
 else
-curl -L "http://busybox.net/downloads/busybox-1.22.1.tar.bz2" -o $HOME_DIR/sources/busybox-1.22.1.tar.bz2
+curl -k -L "http://busybox.net/downloads/busybox-1.22.1.tar.bz2" -o $HOME_DIR/sources/busybox-1.22.1.tar.bz2
 do_downloads
 return 0
 fi
@@ -95,7 +95,7 @@ if
 then
 echo "jemalloc-3.6.0.tar.bz2 checked"
 else
-curl -L "http://www.canonware.com/download/jemalloc/jemalloc-3.6.0.tar.bz2" -o $HOME_DIR/sources/jemalloc-3.6.0.tar.bz2
+curl -k -L "http://www.canonware.com/download/jemalloc/jemalloc-3.6.0.tar.bz2" -o $HOME_DIR/sources/jemalloc-3.6.0.tar.bz2
 do_downloads
 return 0
 fi
