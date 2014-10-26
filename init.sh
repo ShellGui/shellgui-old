@@ -287,7 +287,6 @@ work()
 [ -d $HOME_DIR/logs ] || mkdir $HOME_DIR/logs
 [ -d $HOME_DIR/sources ] || mkdir $HOME_DIR/sources
 [ -d $HOME_DIR/ssl ] || mkdir $HOME_DIR/ssl
-download_shellgui
 echo "$OS" | grep -i "centos" && install_centos_depends
 echo "$OS" | grep -i "ubuntu" && install_ubuntu_depends
 echo "$OS" | grep -i "debian" && install_debian_depends
@@ -296,6 +295,7 @@ du -s $HOME_DIR/htdocs 2>&1 | grep -q "^[0-9][0-9]*"
 then
 echo "Already have docs"
 else
+download_shellgui
 cd $HOME_DIR/sources/
 unzip shellgui-master.zip
 cd shellgui-master
