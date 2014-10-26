@@ -165,28 +165,6 @@ $_LANG_Option
 </table>
 </form>
 
-<div id="ssl_manager">
-<table class="table">
-<legend>SSL Manager</legend>
-EOF
-ssl_list=`ls -l /data/ssl/ | grep "^d" | awk {'print $NF'}`
-if
-[ -n "$ssl_list" ]
-then
-
-for ssl_name in $ssl_list
-do
-cat <<EOF
-<tr><td>/data/ssl/${ssl_name}</td><td><a class="btn btn-primary" href="/index.cgi?app=ssl-gen&server=${ssl_name}" type="button">$_LANG_Edit</a></td><td><a class="btn btn-danger" onclick="del_ssl('${ssl_name}');"  type="button">$_LANG_Del</a></td></tr>
-EOF
-done
-else
-echo "there has no ssl"
-fi
-cat <<EOF
-</table>
-</div>
-
 		</div>
 		<div class="col-md-8">
 <legend>$_LANG_Current_certificate_file</legend>
@@ -235,11 +213,43 @@ $Tip
 </div>
 </form>
 		</div>
+
+<div class="col-md-12" id="ssl_manager">
+<table class="table">
+<legend>SSL Manager</legend>
+EOF
+ssl_list=`ls -l /data/ssl/ | grep "^d" | awk {'print $NF'}`
+if
+[ -n "$ssl_list" ]
+then
+
+for ssl_name in $ssl_list
+do
+cat <<EOF
+<tr><td>/data/ssl/${ssl_name}</td><td>
+<a class="btn btn-primary" href="/index.cgi?app=ssl-gen&action=download&ssl_name=${ssl_name}" type="button">$_LANG_Download</a>
+<a class="btn btn-primary" href="/index.cgi?app=ssl-gen&server=${ssl_name}" type="button">$_LANG_Edit</a>
+<a class="btn btn-danger" onclick="del_ssl('${ssl_name}');"  type="button">$_LANG_Del</a>
+</td></tr>
+EOF
+done
+else
+echo "there has no ssl"
+fi
+cat <<EOF
+</table>
+</div>
+
 	</div>
 </div>
 
 
 EOF
+}
+download()
+{
+tar czf /tmp/ssl_download.tar.gz /data/ssl/$FORM_ssl_name
+main.sbin http_download /tmp/ssl_download.tar.gz $FORM_ssl_name.tar.gz
 }
 del_ssl()
 {
