@@ -1,0 +1,83 @@
+#!/bin/sh
+DOCUMENT_ROOT=`pwd`/htdocs
+cd $DOCUMENT_ROOT/apps
+export PATH=$PATH:$DOCUMENT_ROOT/../bin
+str=$(for i in `find . -type f -maxdepth 2 | grep "/config.conf$" | grep -v "^$"`
+do
+cat ${i} && echo ''
+done | grep -E "^distribution=|^platform=")
+distributions=`echo "$str" | grep "^distribution=" | tr -d "'" | sed -e 's/^distribution=//g' -e 's/,/\n/g' | sort -n | uniq`
+platforms=`echo "$str" | grep "^platform=" | tr -d "'" | sed -e 's/^platform=//g' -e 's/,/\n/g' | sort -n | uniq`
+
+for distribution in $distributions
+do
+	for platform in $platforms
+	do
+	if
+	[ -n "$distribution" ] && [ -n "$distribution" ]
+	then
+	info=""
+cat <<EOF > $DOCUMENT_ROOT/../$distribution"-"$platform".pkgs"
+{
+  "info": {
+	"distribution": "$distribution",
+	"platform": "$platform",
+	"url_prefix": "https://raw.githubusercontent.com/ShellGui/shellgui-appstore/master/"
+  }
+}
+EOF
+	# echo "$distribution" "$platform"
+	fi
+	done
+done
+
+
+cd $DOCUMENT_ROOT/apps/
+for app in `find . -type d -maxdepth 1`
+do
+	app=`basename ${app}`
+	cd $DOCUMENT_ROOT/apps/${app}
+	
+	eval `env | grep "^appfile_" | awk -F "=" {'print $1"="'}`
+	eval `cat config.conf | sed 's/^/appfile_/g'`
+
+	for write_distribution in `echo "${appfile_distribution}" | sed 's/,/\n/g'`
+	do
+		for write_platform in `echo "${appfile_platform}" | sed 's/,/\n/g'`
+		do
+		data=""
+			if
+			[ -n "${write_distribution}" ] && [ -n "${write_platform}" ]
+			then
+			data=`cat $DOCUMENT_ROOT/../${write_distribution}-${write_platform}.pkgs`
+			cd $DOCUMENT_ROOT/apps/${app}
+			eval `cat config.conf`
+			size=`du -sh | awk {'print $1'}`
+			data=`echo "$data" | jq '.["apps"]["'$type'"]["'$app'"] =  .["apps"]["'$type'"]["'$app'"] + {"version":"'$version'"}'`
+			data=`echo "$data" | jq '.["apps"]["'$type'"]["'$app'"] =  .["apps"]["'$type'"]["'$app'"] + {"size":"'$size'"}'`
+			# echo "$data"
+			# echo "$data" | jq '.["apps"] =  {"'$type'":{"'$app'":{"version":"'$version'"}}}'
+			for file in `find . -type f`
+			do
+			file_md5sum=`md5sum ${file} | awk {'print $1'}`
+			file_name=`echo ${file} | sed 's/^\.\///g'`
+			data=`echo "$data" | jq '.["apps"]["'$type'"]["'$app'"]["files"] = .["apps"]["'$type'"]["'$app'"]["files"] + {"'$file_name'":"'$file_md5sum'"}'`
+			done
+			
+			for file_lang in `find $DOCUMENT_ROOT/apps/home/i18n -type d -maxdepth 1 | awk -F "i18n/" {'print $2'} | sed '/^$/d'`
+			do
+			eval `head $DOCUMENT_ROOT/apps/${app}/i18n/${file_lang}/i18n.conf`
+			data=`echo "$data" | jq '.["apps"]["'$type'"]["'$app'"]["i18n"]["'"${file_lang}"'"] = .["apps"]["'$type'"]["'$app'"]["i18n"]["'"${file_lang}"'"] + {"name":"'"$_LANG_App_name"'"}'`
+			data=`echo "$data" | jq '.["apps"]["'$type'"]["'$app'"]["i18n"]["'"${file_lang}"'"] = .["apps"]["'$type'"]["'$app'"]["i18n"]["'"${file_lang}"'"] + {"desc":"'"$_LANG_App_desc"'"}'`
+			data=`echo "$data" | jq '.["apps"]["'$type'"]["'$app'"]["i18n"]["'"${file_lang}"'"] = .["apps"]["'$type'"]["'$app'"]["i18n"]["'"${file_lang}"'"] + {"detail":"'"$_LANG_App_detail"'"}'`
+			data=`echo "$data" | jq '.["apps"]["'$type'"]["'$app'"]["i18n"]["'"${file_lang}"'"] = .["apps"]["'$type'"]["'$app'"]["i18n"]["'"${file_lang}"'"] + {"type":"'"$_LANG_App_type"'"}'`
+			done
+			
+			echo "$data" | jq '.' | tee $DOCUMENT_ROOT/../${write_distribution}-${write_platform}.pkgs
+
+			echo "$write_distribution" "$write_platform"
+			fi
+		done
+	done
+done
+

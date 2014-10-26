@@ -1,0 +1,70 @@
+/*弹出提示*/
+.notification-bar {
+	cursor: pointer;
+	display: none;
+	position: fixed;
+	top: 0;
+	width: 100%;
+	z-index: 9999;
+	border: 1px solid rgba(0,0,0,0.2);
+	border-top: none;
+	box-shadow: 0 1px 2px rgba(0,0,0,0.2);
+	-webkit-border-bottom-right-radius: 5px;
+	-webkit-border-bottom-left-radius: 5px;
+	-moz-border-radius-bottomright: 5px;
+	-moz-border-radius-bottomleft: 5px;
+	border-bottom-right-radius: 5px;
+	border-bottom-left-radius: 5px;
+	-webkit-box-sizing: border-box;
+	-moz-box-sizing: border-box;
+	box-sizing: border-box;
+}
+
+.notification-bar .close {
+	position: absolute;
+	right: 20px;
+	top: 50%;
+	line-height: 20px;
+	margin-top: -10px;
+	opacity: 0;
+}
+.notification-bar p{
+	color: #111;
+	display: none;
+	font-size: 14px;
+	margin: 15px auto;
+	opacity: 0;
+}
+.cell{
+	border-right: 1px #ccc dotted;
+	border-bottom: 1px #ccc dotted;
+	padding: 20px 17px 22px 20px;
+	height: 191px;
+}
+.thrcell{
+	border-bottom: 1px #ccc dotted;
+	padding: 20px 17px 22px 20px;
+	height: 191px;
+}
+.cell .install-btn, .thrcell .install-btn {
+	letter-spacing: 1px;
+	font-size: .875em;
+	position: absolute;
+	top: 12px;
+	right: 10px;
+}
+.cell .install-btn:hover, .thrcell .install-btn:hover {
+	color: #fff;
+	opacity: .8
+}
+.cell .install-btn.disabled, .thrcell .install-btn.disabled {
+	color: #666;
+	background: #ccc;
+	font-size: .75em
+}
+.cell .brief, .thrcell .brief{
+color: #333;font-size: 12px;margin-top: 14px;line-height: 21px;
+}
+.cell .install-count, .thrcell .install-count {
+*margin-left:4px
+}

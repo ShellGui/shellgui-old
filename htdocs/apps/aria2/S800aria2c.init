@@ -1,0 +1,37 @@
+#!/bin/sh
+enable=1
+start()
+{
+[ -z "$DOCUMENT_ROOT" ] && export DOCUMENT_ROOT=`main.sbin where_DOCUMENT_ROOT`
+if
+[ ! -x $DOCUMENT_ROOT/../bin/aria2c ] 
+then
+main.sbin notice option="add" \
+				read="0" \
+				desc="_NOTICE_aria2_binary_need_install" \
+				detail="_NOTICE_aria2_binary_need_install" \
+				uniqid="aria2_binary_need_install" \
+				time="" \
+				ergen="red" \
+				dest="aria2" \
+				dest_type="app" >/dev/null 2>&1
+fi
+[ -d $(grep -E "^dir=" $DOCUMENT_ROOT/apps/aria2/aria2.conf  | awk -F "=" {'print $2'}) ] || sed -i "s#^dir=.*#dir=/tmp#g" $DOCUMENT_ROOT/apps/aria2/aria2.conf
+[ -f $(grep -E "^save-session=" $DOCUMENT_ROOT/apps/aria2/aria2.conf  | awk -F "=" {'print $2'}) ] || sed -i "s#^save-session=.*#save-session=$DOCUMENT_ROOT/apps/aria2/aria2.session#g" $DOCUMENT_ROOT/apps/aria2/aria2.conf
+[ -f $(grep -E "^input-file=" $DOCUMENT_ROOT/apps/aria2/aria2.conf  | awk -F "=" {'print $2'}) ] || sed -i "s#^input-file=.*#input-file=$DOCUMENT_ROOT/apps/aria2/aria2.session#g" $DOCUMENT_ROOT/apps/aria2/aria2.conf
+
+[ -f $DOCUMENT_ROOT/apps/aria2/aria2.session ] || touch $DOCUMENT_ROOT/apps/aria2/aria2.session
+if
+[ $enable -eq 1 ]
+then
+ps aux | grep -v grep | grep -q " aria2c " || aria2c --conf-path=$DOCUMENT_ROOT/apps/aria2/aria2.conf -D
+else
+killall aria2c || pkill aria2c
+fi
+exit
+}
+stop()
+{
+killall aria2c || pkill aria2c
+}
+[ -z "$1" ] && start || $1

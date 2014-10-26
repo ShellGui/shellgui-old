@@ -1,0 +1,34 @@
+#!/bin/sh
+enable=1
+start()
+{
+crond_pid=`ps aux |grep -v grep | grep -E "busybox[ ]+crond" | grep "^root" | awk {'print $2'}`
+kill -9 $crond_pid
+[ $enable -ne 1 ] && exit 1
+loglevel=5
+[ -z "$DOCUMENT_ROOT" ] && export DOCUMENT_ROOT=`main.sbin where_DOCUMENT_ROOT`
+[ -z "$(ls $DOCUMENT_ROOT/apps/scheduled/crontabs/)" ] && exit 1
+[ -d /var/spool/cron ] || mkdir -p /var/spool/cron
+rm -rf /var/spool/cron/*
+cp -R $DOCUMENT_ROOT/apps/scheduled/crontabs /var/spool/cron/ 2>/dev/null
+app_jobs="`find  $DOCUMENT_ROOT/apps/ -maxdepth 2 | grep "\.cron$"`"
+if
+[ -n "$app_jobs" ]
+then
+for i in $app_jobs
+do
+user=`basename ${i} | sed 's/.cron//'`
+echo "# AppName: `dirname $i | xargs basename`        CronJobName: `basename $i`" >> /var/spool/cron/crontabs/${user}
+cron_str="`cat $i`"
+echo "$cron_str\n" >> /var/spool/cron/crontabs/${user}
+done
+fi
+$DOCUMENT_ROOT/../bin/busybox crond -c /var/spool/cron/crontabs/ -l ${loglevel:-5} -L /var/log/cron
+exit
+}
+stop()
+{
+crond_pid=`ps aux |grep -v grep | grep -E "busybox[ ]+crond" | grep "^root" | awk {'print $2'}`
+kill -9 $crond_pid
+}
+[ -z "$1" ] && start || $1

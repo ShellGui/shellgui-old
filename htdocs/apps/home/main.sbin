@@ -1,0 +1,1391 @@
+#!/bin/sh
+# Copyright (C) 2006-2014 EK
+stop_all_service()
+{
+export DOCUMENT_ROOT=$DOCUMENT_ROOT
+export PATH=$PATH:$DOCUMENT_ROOT/../bin
+killall lighttpd || pkill lighttpd
+app_services=`find $DOCUMENT_ROOT/apps -type f -maxdepth 2 | grep "\.init$" | grep -E "/S[0-9][0-9]*" | awk -F "/S" {'print $2" "$1'} | sort -n | awk {'print $2"/S"$1'}`
+for services in `echo "$app_services" | grep -vE "^/S99$|^/S100$"`
+do
+echo "Runing stop ${services}"
+${services} stop
+done
+}
+fw_init()
+{
+export DOCUMENT_ROOT=$DOCUMENT_ROOT
+export PATH=$PATH:$DOCUMENT_ROOT/../bin
+(. $DOCUMENT_ROOT/apps/base-firewall/base_firewall_lib.sh >/dev/null 2>&1
+firewall_restart >/dev/null 2>&1)
+}
+fw_stop()
+{
+export DOCUMENT_ROOT=$DOCUMENT_ROOT
+export PATH=$PATH:$DOCUMENT_ROOT/../bin
+(. $DOCUMENT_ROOT/apps/base-firewall/base_firewall_lib.sh >/dev/null 2>&1
+firewall_stop >/dev/null 2>&1)
+}
+init()
+{
+fw_init
+export DOCUMENT_ROOT=$DOCUMENT_ROOT
+export PATH=$PATH:$DOCUMENT_ROOT/../bin
+killall lighttpd || pkill lighttpd
+$DOCUMENT_ROOT/../sbin/lighttpd -f $DOCUMENT_ROOT/../etc/lighttpd/lighttpd.conf
+app_services=`find $DOCUMENT_ROOT/apps -type f -maxdepth 2 | grep "\.init$" | grep -E "/S[0-9][0-9]*" | awk -F "/S" {'print $2" "$1'} | sort -n | awk {'print $2"/S"$1'}`
+for services in `echo "$app_services" | grep -vE "^/S99$|^/S100$"`
+do
+echo "Runing start ${services}"
+${services} start
+done
+}
+where_DOCUMENT_ROOT()
+{
+echo $DOCUMENT_ROOT
+}
+pid_uptime()
+{
+if
+[ -z "$1" ]
+then
+echo "pid_start_date=\"-\""
+echo "pid_runs=\"-\""
+exit 1
+fi
+pid_str=`ps -eo pid,lstart,etime | grep -E "[ ]*${1}"`
+echo "pid_start_date=\"$(echo "$pid_str" | grep -Po '[A-Z].*:[0-9]{2}[ ][0-9]{4}')\""
+echo "pid_runs=\"$(echo "$pid_str" | awk {'print $NF'})\""
+
+}
+
+httpd_modules()
+{
+echo "server.modules = ("
+for i in `find $DOCUMENT_ROOT/apps -type f -maxdepth 2 | grep "\.httpd_modules$"`
+do
+[ -n "${i}" ] && cat ${i}
+echo ""
+done | sed 's/[ \t]*//g' | sed '/^$/d' | sed 's/"//g' | sed 's/,//g' | sed 's/^/"/g' | sed 's/$/"/g' | sort -n | uniq | sed 's/$/,/g' | sed '$s/,.*$//'
+echo ")"
+
+}
+httpd_simple_vhost()
+{
+for i in `find $DOCUMENT_ROOT/apps -type f -maxdepth 2 | grep "\.httpd_simple_vhost$"`
+do
+[ -n "${i}" ] && cat ${i}
+echo ""
+done
+}
+httpd_htpass()
+{
+for i in `find $DOCUMENT_ROOT/apps -type f -maxdepth 2 | grep "\.httpd_htpass$"`
+do
+[ -n "${i}" ] && cat ${i}
+echo ""
+done
+}
+httpd_proxy()
+{
+for i in `find $DOCUMENT_ROOT/apps -type f -maxdepth 2 | grep "\.httpd_proxy$"`
+do
+[ -n "${i}" ] && cat ${i}
+echo ""
+done
+}
+httpd_fastcgi()
+{
+for i in `find $DOCUMENT_ROOT/apps -type f -maxdepth 2 | grep "\.httpd_fastcgi$"`
+do
+[ -n "${i}" ] && cat ${i}
+echo ""
+done
+}
+httpd_cgi()
+{
+for i in `find $DOCUMENT_ROOT/apps -type f -maxdepth 2 | grep "\.httpd_cgi$"`
+do
+[ -n "${i}" ] && cat ${i}
+echo ""
+done
+}
+httpd_webdav()
+{
+for i in `find $DOCUMENT_ROOT/apps -type f -maxdepth 2 | grep "\.httpd_webdav$"`
+do
+[ -n "${i}" ] && cat ${i}
+echo ""
+done
+}
+httpd_others()
+{
+for i in `find $DOCUMENT_ROOT/apps -type f -maxdepth 2 | grep "\.httpd_others$"`
+do
+[ -n "${i}" ] && cat ${i}
+echo ""
+done
+}
+http_download()
+{
+[ -f $1 ] || exit 1
+cat <<EOF
+Content-Type:application/x-download
+Content-Disposition: attachment; filename=`basename $1`
+
+EOF
+cat $1
+}
+pregress_schedule()
+{
+
+[ -z "$option" ] && echo "Miss option" && exit 1
+
+case $option in
+get_status)
+[ -z "$task" ] &&  echo "Miss task" && exit 1
+data_str=`cat $DOCUMENT_ROOT/../tmp/progress_schedule.json`
+echo "$data_str" | jq '.["'$task'"]["status"]'
+;;
+add)
+# option="add"
+# read="0" \
+# schedule="{\"xx\":\"11\",\"yy\":\"22\",\"zz\":\"33\"}"
+# main.sbin pregress_schedule option="add" schedule="{\"_PS_1_xx\":\"0\"}" detail_file="/tmp/1.log" task="_PS_task1" app="sysinfo" status="working"
+
+# if
+# [ -n "$progress" ]
+# then
+# echo "$progress" | regx_str islang_alb || (echo "progress must be number" && return 1) || exit 1
+# else
+# pregress=0
+# fi
+[ -z "$task" ] &&  echo "Miss task" && exit 1
+[ -z "$app" ] &&  echo "Miss app" && exit 1
+echo "$task" | grep -qE "^_PS_" || (echo "task must start with _PS_" && return 1) || exit 1
+[ -z "$time" ] && time="`date +%s`"
+[ -z "$pregress" ] && pregress=0
+if
+[ -z "$status" ]
+then
+status="working"
+else
+[ "$status" = "working" ] || [ "$status" = "success" ] || [ "$status" = "fail" ]
+	if
+	[ $? -ne 0 ]
+	then
+	echo "status Must one of \"working|success|fail\""
+	exit 1
+	fi
+fi
+[ -z "$detail_file" ] && echo "Miss detail_file" && exit 1
+
+if
+[ -n "$schedule" ]
+then
+	if
+	echo "$schedule" | jq '. | keys' | grep -Po '[\w]*' | grep -qE "^_PS_[0-9]*_" >/dev/null 2>&1
+	then
+	var_str=",\"schedule\":$schedule"
+	else
+	echo "schedule error.must like {\\\"_PS_1_xx\":\\\"0\"}"
+	exit 1
+	fi
+fi
+
+data_str=`cat $DOCUMENT_ROOT/../tmp/progress_schedule.json` >/dev/null 2>&1
+[ -z "$data_str" ] &&  data_str="{}"
+new_data=`echo "$data_str" | jq -r '. = . + {"'$task'":{"time":"'$time'","status":"'$status'","app":"'$app'","pregress":"'$pregress'","detail_file":"'$detail_file'"'"$var_str"'}}'`
+echo "$new_data" > $DOCUMENT_ROOT/../tmp/progress_schedule.json
+
+;;
+now)
+# main.sbin pregress_schedule option="now" task="_PS_task1" schedule_now="_PS_5_xx"
+
+[ -z "$task" ] &&  echo "Miss task" && exit 1
+[ -z "$schedule_now" ] &&  echo "Miss schedule_now" && exit 1
+data_str=`cat $DOCUMENT_ROOT/../tmp/progress_schedule.json`
+
+for  i in `echo "$data_str" | jq '.["'$task'"]["schedule"] | keys' | grep -Po '[\w]*' | grep -B 20 "^$schedule_now"`
+do
+i_var=`expr $(echo "$data_str" | jq '.["'$task'"]["schedule"]["'${i}'"]' | grep -Po '[\w]*') + 1`
+data_str=`echo "$data_str" | jq '.["'$task'"]["schedule"]["'$i'"] = "'${i_var}'"'`
+done
+echo "$data_str" > $DOCUMENT_ROOT/../tmp/progress_schedule.json
+;;
+
+change_pregress)
+#main.sbin pregress_schedule option="del" task="task1"
+
+[ -z "$task" ] &&  echo "Miss task" && exit 1
+[ -z "$pregress_now" ] &&  echo "Miss pregress_now" && exit 1
+data_str=`cat $DOCUMENT_ROOT/../tmp/progress_schedule.json`
+echo "$data_str" | jq '.["'$task'"]["pregress"] = "'$pregress_now'"' > $DOCUMENT_ROOT/../tmp/progress_schedule.json
+;;
+change_status)
+#main.sbin pregress_schedule option="del" task="task1"
+
+[ -z "$task" ] &&  echo "Miss task" && exit 1
+[ -z "$status_now" ] &&  echo "Miss status_now" && exit 1
+data_str=`cat $DOCUMENT_ROOT/../tmp/progress_schedule.json`
+echo "$data_str" | jq '.["'$task'"]["status"] = "'$status_now'"' > $DOCUMENT_ROOT/../tmp/progress_schedule.json
+;;
+del)
+#main.sbin pregress_schedule option="del" task="task1"
+
+[ -z "$task" ] &&  echo "Miss task" && exit 1
+data_str=`cat $DOCUMENT_ROOT/../tmp/progress_schedule.json`
+detail_file=$(echo "$data_str" | jq -r '.["'$task'"]["detail_file"]')
+[ -f $detail_file ] && rm -f $detail_file
+echo "$data_str" | jq 'del(.["'$task'"])' > $DOCUMENT_ROOT/../tmp/progress_schedule.json
+;;
+esac
+}
+
+notice()
+{
+[ -z "$option" ] && echo "Miss option" && exit 1
+
+case $option in
+add)
+# option="add"
+# read="0" \
+# desc="2" \
+# detail="6" \
+# uniqid="" \
+# time="" \
+# ergen="green" \
+# dest="sysinfo" \
+# dest_type="app" \
+# variable="{\"xx\":\"11\",\"yy\":\"22\",\"zz\":\"33\"}"
+if
+[ -z "$ergen" ]
+then
+ergen="green"
+else
+[ "$ergen" = "green" ] || [ "$ergen" = "yellow" ] || [ "$ergen" = "red" ]
+	if
+	[ $? -ne 0 ]
+	then
+	echo "ergen Must one of \"green|yellow|red\""
+	exit 1
+	fi
+fi
+[ -z "$desc" ] && echo "Miss desc" && exit 1
+[ -z "$detail" ] && echo "Miss detail" && exit 1
+[ -z "$dest" ] && echo "Miss dest" && exit 1
+[ -z "$dest_type" ] && echo "Miss dest_type" && exit 1
+[ -z "$read" ] && read="0"
+[ -z "$time" ] && time="`date +%s`"
+if
+[ -n "$variable" ]
+then
+	if
+	echo "$variable" | jq '.' >/dev/null 2>&1
+	then
+	var_str=",\"variable\":$variable"
+	else
+	echo "variable error"
+	exit 1
+	fi
+fi
+notice_index_str=`cat $DOCUMENT_ROOT/apps/notice/notice_index.json`
+notice_data_str=`cat $DOCUMENT_ROOT/apps/notice/notice_data.json`
+if
+[ -n "$uniqid" ]
+then
+echo "$notice_index_str" | jq -r '.[]["uniqid"]' | grep -v "null" | grep -q "^$uniqid$" && echo "exsit uniqid" && exit 1
+fi
+last_id=`echo "$notice_index_str" | jq -r '. | keys' | grep -Po '[0-9]*' | sort -n | tail -n 1`
+if
+[ -z "$last_id" ]
+then
+notice_index_str="{}"
+notice_data_str="{}"
+last_id=0
+fi
+next_id=`expr $last_id + 1`
+[ -n "$uniqid" ] && uniqid_str=",\"uniqid\":\"$uniqid\""
+
+new_data=`echo "$notice_data_str" | jq -r '. = . + {"'$next_id'":{"time":"'$time'","ergen":"'$ergen'","detail":"'$detail'","dest":"'$dest'","dest_type":"'$dest_type'"'"$var_str"'}}'`
+([ -n "$new_data" ] && echo "$new_data" >$DOCUMENT_ROOT/apps/notice/notice_data.json) || exit 1
+
+new_index=`echo "$notice_index_str" | jq -r '. = . + {"'$next_id'":{"read":"'$read'","desc":"'$desc'"'$uniqid_str'}}'`
+[ -n "$new_index" ] && echo "$new_index" >$DOCUMENT_ROOT/apps/notice/notice_index.json
+
+;;
+
+del)
+# id="3"
+# id="1,2,3"
+notice_index_str=`cat $DOCUMENT_ROOT/apps/notice/notice_index.json`
+notice_data_str=`cat $DOCUMENT_ROOT/apps/notice/notice_data.json`
+IFS_bak=$IFS
+IFS=","
+for id_del in $id
+do
+if
+[ "`echo "$notice_index_str" | jq '.["'${id_del}'"]["uniqid"]'`" = "null" ]
+then
+notice_index_str=`echo "$notice_index_str" | jq 'del(.["'${id_del}'"])'`
+notice_data_str=`echo "$notice_data_str" | jq 'del(.["'${id_del}'"])'`
+fi
+done
+IFS=$IFS_bak
+echo "$notice_index_str" > $DOCUMENT_ROOT/apps/notice/notice_index.json
+echo "$notice_data_str" > $DOCUMENT_ROOT/apps/notice/notice_data.json
+;;
+
+mark_read)
+notice_index_str=`cat $DOCUMENT_ROOT/apps/notice/notice_index.json`
+IFS_bak=$IFS
+IFS=","
+for id_read in $id
+do
+[ "$(echo "$notice_index_str" | jq -r '.["'${id_read}'"]["uniqid"]')" = "null" ] && notice_index_str=`echo "$notice_index_str" | jq '.["'${id_read}'"] = .["'${id_read}'"] + {"read":"1"}'`
+done
+IFS=$IFS_bak
+echo "$notice_index_str" > $DOCUMENT_ROOT/apps/notice/notice_index.json
+;;
+unmark_uniq)
+notice_index_str=`cat $DOCUMENT_ROOT/apps/notice/notice_index.json`
+id=`echo "$notice_index_str" | jq '. as $in | keys[] | select($in[.]|type=="object") | select($in[.].uniqid == "'$uniqid'" )' | grep -Po '[0-9]*'`
+[ -z "$id" ] && echo "not a uniqid in data" && exit 1
+notice_index_str=`echo "$notice_index_str" | jq 'del(.["'${id}'"]["uniqid"])'`
+echo "$notice_index_str" > $DOCUMENT_ROOT/apps/notice/notice_index.json
+;;
+esac
+
+}
+storage_size_conver()
+{
+(echo "$1" | regx_str islang_alb || return 1) || exit 1
+# if [ $1 -ge 1099511627776 ];then echo $(($1/1024/1024/1024/1024)) T;exit;fi
+# if [ $1 -ge 1073741824 ];then echo $(($1/1024/1024/1024)) G;exit;fi
+# if [ $1 -ge 1048576 ];then echo $(($1/1024/1024)) M;exit;fi
+# if [ $1 -ge 1024 ];then echo $(($1/1024)) K;exit;fi
+# if [ $1 -lt 1024 ];then echo $1 B;exit;fi
+if [ $1 -ge 1099511627776 ];then awk 'BEGIN{result='$1'/1024/1024/1024/1024;printf "%.2f\n",result;print  "T"}';exit;fi
+if [ $1 -ge 1073741824 ];then awk 'BEGIN{result='$1'/1024/1024/1024;printf "%.2f\n",result;print  "G"}';exit;fi
+if [ $1 -ge 1048576 ];then awk 'BEGIN{result='$1'/1024/1024;printf "%.2f\n",result;print  "M"}';exit;fi
+if [ $1 -ge 1024 ];then awk 'BEGIN{result='$1'/1024;printf "%.2f\n",result;print "K"}';exit;fi
+if [ $1 -lt 1024 ];then echo $1 B;exit;fi
+}
+
+check_root_password()
+{
+[ -z "$user" ] && echo "fail" && exit 1
+[ -z "$pass" ] && echo "fail" && exit 1
+# ssh_port=`netstat -tlnp | grep "/sshd" | grep ":" |sed -n 1p | awk {'print $4'} | awk -F":" {'print $2'}`
+check(){
+# expect <<EOF
+  # set timeout -1
+  # spawn ssh -p ${ssh_port} ${user}@127.0.0.1
+  # expect "password:" {
+    # send "${pass}\r" 
+    # expect "# " {
+      # send "whoami\r"
+      # expect "# " ; send "exit\r" ;exit 0
+    # } "Permission denied, please try again." {
+      # exit 1
+    # }
+  # } timeout {
+    # exit 1
+  # }
+# EOF
+crypt_string=`awk -F: '$1 == login { print $2 }' login=$user /etc/shadow`
+SALT=`grep "^$user:" /etc/shadow | awk -F '\\$' '{ print "\\$"$2"\\$"$3"\\$" }' 2>/dev/null`
+[ -z "$SALT" ] && exit 1
+ENCPASS=`perl -e "print( crypt( \"$pass\", \"$SALT\"). \"\n\");"`
+if
+[ $? -ne 0 ]
+then
+SALT=`echo $SALT | sed 's/\\$/\\\\$/g'`
+ENCPASS=`perl -e "print( crypt( \"$pass\", \"$SALT\"). \"\n\");"`
+fi
+
+if [ "$crypt_string" = "$ENCPASS" ]; then
+	exit 0
+else
+	exit 1
+fi
+}
+check >/dev/null 2>&1
+if
+[ $? = 0 ]
+then
+echo success
+exit 0
+else
+echo fail
+exit 1
+fi
+}
+html_head()
+{
+lang_app_name=`cat $DOCUMENT_ROOT/../tmp/home.json  | jq '."i18n"["app"]['\"${FORM_app}\"']["'$(get_client_lang)'"]' | sed -e 's/^"//g' -e 's/"$//g'`
+if
+[ -n "$FORM_app" ] #&& [ "$FORM_app" != "home" ] && [ "$FORM_app" != "login" ]
+then
+tittle=$lang_app_name
+else
+tittle=`hostname`
+fi
+cat <<EOF
+
+<!DOCTYPE html>
+<!--[if IE 7 ]><html class="no-js ie7 ie"><![endif]-->
+<!--[if IE 8 ]><html class="no-js ie8 ie"><![endif]-->
+<!--[if IE 9 ]><html class="no-js ie9 ie"><![endif]-->
+<!--[if (gt IE 9)|!(IE)]><!--><html class="no-js"><!--<![endif]-->
+<head>
+	<title>$tittle</title>
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <link href="/common/css/bootstrap.min.css" rel="stylesheet" />
+    <link href="/common/css/bootstrap-theme.css" rel="stylesheet" />
+    <link href="/common/css/common.css" rel="stylesheet" />
+    <!--[if lt IE 9]>
+	  <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+	  <script src="https://oss.maxcdn.com/libs/respond.js/1.3.0/respond.min.js"></script>
+	<![endif]-->
+<script src="/common/js/jquery.min.js" type="text/javascript"></script>
+<script src="/common/js/bootstrap.min.js" type="text/javascript"></script>
+<script src="/common/js/common.js" type="text/javascript"></script>
+
+
+EOF
+}
+html_foot()
+{
+if
+check_admin_session
+then
+cat <<EOF
+<footer class="bs-footer" role="contentinfo">
+  <div class="container">
+  	  	<div class="row social">
+  		<div class="col-sm-10 col-xs-12">
+		    <a class="btn btn-danger" href="javascript:;" id="power-restart"><span class="glyphicon glyphicon-off"></span>$_LANG_Reboot</a>
+		    <a class="btn btn-danger" href="javascript:;" id="network-restart"><span class="glyphicon glyphicon-repeat"></span>$_LANG_ReStart_Network</a>
+		    <a class="btn btn-danger" href="javascript:;" id="firewall-restart"><span class="glyphicon glyphicon-th-list"></span>$_LANG_ReStart_Firewall</a>
+		    <a class="btn btn-danger" href="javascript:;" id="cleanmem"><span class="glyphicon glyphicon-retweet"></span>$_LANG_Clean_mem</a>
+		    <a class="btn btn-info" href="javascript:;" id="netstat"><span class="glyphicon glyphicon-th"></span>$_LANG_Port_Occupancy</a>
+		    <a class="btn btn-info" href="javascript:;" id="logread"><span class="glyphicon glyphicon-file"></span>$_LANG_Logread</a>
+		    <a class="btn btn-info" href="http://wiki.shellgui.com/doku.php?id=zh:manual-home-1.01" target="_blank"><span class="glyphicon glyphicon-book"></span>$_LANG_Online_Manual</a>
+			<a class="btn btn-info" href="http://forum.shellgui.com" target="_blank"><span class="glyphicon glyphicon-comment"></span>$_LANG_Online_Forum</a>
+EOF
+[ "$lang" = "zh-cn" ] && _Lang_CN_Tip="核心面板,五年情结,两年设计,抄袭必究!"
+cat <<EOF
+		</div>
+  	</div>
+  	  	<div class="row copyright">
+	    <div class="col-sm-10 col-xs-12">
+	        <p>2012-2014 <a href="http://www.shellgui.com" target="_blank">ShellGui.com</a>All rights reserved $_Lang_CN_Tip </p>
+	    </div>
+EOF
+cat <<EOF
+	    <div class="col-sm-2 col-xs-12">
+	    	        <p class="pull-right">
+	            <a href="#top">$_LANG_Go_Top	<span class="glyphicon glyphicon-arrow-up"></span>
+	            </a>
+	        </p>
+  			    </div>
+	</div>
+</div>
+</footer>
+
+
+<div class="modal fade" id="logreadModal">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+        <h4 class="modal-title">$_LANG_Logread</h4>
+      </div>
+      <div class="modal-body" style="overflow-y: auto;height: 500px;">
+		<p id="logread_content"></p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">$_LANG_Close</button>
+      </div>
+    </div>
+  </div>
+</div>
+EOF
+cat <<'EOF'
+<script>
+$('#logread').on('click', function(){
+	var url = 'index.cgi?app=home&action=logread';
+	Ha.common.ajax(url, 'html', '', 'get', 'applist', function(data){
+		$('#logread_content').html(data);
+		$('#logreadModal').modal('show');
+	}, 1);
+});
+</script>
+EOF
+cat <<EOF
+<div class="modal fade" id="power-restartModal">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+        <h4 class="modal-title">$_LANG_Reboot</h4>
+      </div>
+      <div class="modal-body" style="overflow-y: auto;height: 50px;">
+		<p id="power-restart_content"></p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">$_LANG_Close</button>
+		<input type="hidden" name="action">
+        <button type="button" href="javascript:;" class="btn btn-danger" id="do_power_off">$_LANG_Power_off</button>
+        <button type="button" href="javascript:;" class="btn btn-danger" id="do_power_restart">$_LANG_Reboot</button>
+      </div>
+    </div>
+  </div>
+</div>
+EOF
+cat <<'EOF'
+<script>
+$('#power-restart').on('click', function(){
+	var url = 'index.cgi?app=home&action=pre_power_restart';
+	Ha.common.ajax(url, 'html', '', 'get', 'applist', function(data){
+		$('#power-restart_content').html(data);
+		$('#power-restartModal').modal('show');
+	}, 1);
+});
+$('#do_power_restart').on('click', function(){
+var url = 'index.cgi?app=home&action=do_power_restart';
+	Ha.common.ajax(url, 'html', '', 'get', 'applist', function(data){
+		$('#power-restart_content').html(data);
+		$('#power-restartModal').modal('show');
+	}, 1);
+});
+$('#do_power_off').on('click', function(){
+var url = 'index.cgi?app=home&action=do_power_off';
+	Ha.common.ajax(url, 'html', '', 'get', 'applist', function(data){
+		$('#power-restart_content').html(data);
+		$('#power-restartModal').modal('show');
+	}, 1);
+});
+EOF
+cat <<EOF
+</script>
+<div class="modal fade" id="network-restartModal">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+        <h4 class="modal-title">$_LANG_ReStart_Network</h4>
+      </div>
+      <div class="modal-body" style="overflow-y: auto;height: 480px;">
+		<p id="network-restart_content"></p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">$_LANG_Close</button>
+		<input type="hidden" name="action">
+        <button type="button" href="javascript:;" class="btn btn-info" id="do_network_list">ifconfig</button>
+		<input type="hidden" name="action">
+        <button type="button" href="javascript:;" class="btn btn-danger" id="do_network_restart">$_LANG_ReStart_Network</button>
+      </div>
+    </div>
+  </div>
+</div>
+EOF
+
+cat <<'EOF'
+<script>
+$('#network-restart').on('click', function(){
+	var url = 'index.cgi?app=home&action=pre_network_restart';
+	Ha.common.ajax(url, 'html', '', 'get', 'applist', function(data){
+		$('#network-restart_content').html(data);
+		$('#network-restartModal').modal('show');
+	}, 1);
+});
+$('#do_network_list').on('click', function(){
+var url = 'index.cgi?app=home&action=do_network_list';
+	Ha.common.ajax(url, 'html', '', 'get', 'applist', function(data){
+		$('#network-restart_content').html(data);
+		$('#network-restartModal').modal('show');
+	}, 1);
+});
+$('#do_network_restart').on('click', function(){
+var url = 'index.cgi?app=home&action=do_network_restart';
+	Ha.common.ajax(url, 'html', '', 'get', 'applist', function(data){
+		$('#network-restart_content').html(data);
+		$('#network-restartModal').modal('show');
+	}, 1);
+});
+</script>
+EOF
+
+cat <<EOF
+<div class="modal fade" id="firewall-restartModal">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+        <h4 class="modal-title">$_LANG_ReStart_Firewall</h4>
+      </div>
+      <div class="modal-body" style="overflow-y: auto;height: 480px;">
+		<p id="firewall-restart_content"></p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">$_LANG_Close</button>
+		<input type="hidden" name="action">
+        <button type="button" href="javascript:;" class="btn btn-info" id="do_firewall_rule_list">List</button>
+		<input type="hidden" name="action">
+        <button type="button" href="javascript:;" class="btn btn-danger" id="do_firewall_restart">$_LANG_ReStart_Firewall</button>
+      </div>
+    </div>
+  </div>
+</div>
+EOF
+cat <<EOF
+<div class="modal fade" id="cleanmemModal">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+        <h4 class="modal-title">$_LANG_Clean_mem</h4>
+      </div>
+      <div class="modal-body" style="overflow-y: auto;height: 480px;">
+		<p id="cleanmem_content"></p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">$_LANG_Close</button>
+		<input type="hidden" name="action">
+        <button type="button" href="javascript:;" class="btn btn-danger" id="do_cleanmem">$_LANG_Clean_mem</button>
+      </div>
+    </div>
+  </div>
+</div>
+EOF
+cat <<'EOF'
+<script>
+$('#cleanmem').on('click', function(){
+	var url = 'index.cgi?app=home&action=pre_cleanmem';
+	Ha.common.ajax(url, 'html', '', 'get', 'applist', function(data){
+		$('#cleanmem_content').html(data);
+		$('#cleanmemModal').modal('show');
+	}, 1);
+});
+$('#do_cleanmem').on('click', function(){
+var url = 'index.cgi?app=home&action=do_cleanmem';
+	Ha.common.ajax(url, 'html', '', 'get', 'applist', function(data){
+		$('#cleanmem_content').html(data);
+		$('#cleanmemModal').modal('show');
+	}, 1);
+});
+$('#firewall-restart').on('click', function(){
+	var url = 'index.cgi?app=home&action=pre_firewall_restart';
+	Ha.common.ajax(url, 'html', '', 'get', 'applist', function(data){
+		$('#firewall-restart_content').html(data);
+		$('#firewall-restartModal').modal('show');
+	}, 1);
+});
+$('#do_firewall_restart').on('click', function(){
+var url = 'index.cgi?app=home&action=do_firewall_restart';
+	Ha.common.ajax(url, 'html', '', 'get', 'applist', function(data){
+		$('#firewall-restart_content').html(data);
+		$('#firewall-restartModal').modal('show');
+	}, 1);
+});
+$('#do_firewall_rule_list').on('click', function(){
+var url = 'index.cgi?app=home&action=do_firewall_rule_list';
+	Ha.common.ajax(url, 'html', '', 'get', 'applist', function(data){
+		$('#firewall-restart_content').html(data);
+		$('#firewall-restartModal').modal('show');
+	}, 1);
+});
+$('#do_firewall_rule_list').on('click', function(){
+var url = 'index.cgi?app=home&action=do_firewall_rule_list';
+	Ha.common.ajax(url, 'html', '', 'get', 'applist', function(data){
+		$('#firewall-restart_content').html(data);
+		$('#firewall-restartModal').modal('show');
+	}, 1);
+});
+</script>
+EOF
+cat <<EOF
+<div class="modal fade" id="port-occupancyModal">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+        <h4 class="modal-title">$_LANG_Port_Occupancy</h4>
+      </div>
+      <div class="modal-body" style="overflow-y: auto;height: 480px;">
+		<p id="port-occupancy_content"></p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">$_LANG_Close</button>
+		<input type="hidden" name="action">
+        <button type="button" href="javascript:;" class="btn btn-info" id="do_tcpudp_port_stat_list">Tcp+Udp $_LANG_Occupancy</button>
+		<input type="hidden" name="action">
+		<button type="button" href="javascript:;" class="btn btn-info" id="do_tcp_port_stat_list">Tcp $_LANG_Occupancy</button>
+		<input type="hidden" name="action">
+		<button type="button" href="javascript:;" class="btn btn-info" id="do_udp_port_stat_list">Udp $_LANG_Occupancy</button>
+      </div>
+    </div>
+  </div>
+</div>
+EOF
+cat <<'EOF'
+<script>
+$('#netstat').on('click', function(){
+	var url = 'index.cgi?app=home&action=do_tcpudp_port_stat_list';
+	Ha.common.ajax(url, 'html', '', 'get', 'applist', function(data){
+		$('#port-occupancy_content').html(data);
+		$('#port-occupancyModal').modal('show');
+	}, 1);
+});
+$('#do_tcpudp_port_stat_list').on('click', function(){
+var url = 'index.cgi?app=home&action=do_tcpudp_port_stat_list';
+	Ha.common.ajax(url, 'html', '', 'get', 'applist', function(data){
+		$('#port-occupancy_content').html(data);
+		$('#port-occupancyModal').modal('show');
+	}, 1);
+});
+$('#do_tcp_port_stat_list').on('click', function(){
+var url = 'index.cgi?app=home&action=do_tcp_port_stat_list';
+	Ha.common.ajax(url, 'html', '', 'get', 'applist', function(data){
+		$('#port-occupancy_content').html(data);
+		$('#port-occupancyModal').modal('show');
+	}, 1);
+});
+$('#do_udp_port_stat_list').on('click', function(){
+var url = 'index.cgi?app=home&action=do_udp_port_stat_list';
+	Ha.common.ajax(url, 'html', '', 'get', 'applist', function(data){
+		$('#port-occupancy_content').html(data);
+		$('#port-occupancyModal').modal('show');
+	}, 1);
+});
+</script>
+EOF
+else
+cat <<EOF
+<footer class="bs-footer" role="contentinfo">
+  <div class="container">
+  	  	<div class="row social">
+  		<div class="col-sm-10 col-xs-12">
+			<a class="btn btn-info" href="http://forum.shellgui.com" target="_blank"><span class="glyphicon glyphicon-comment"></span>$_LANG_Online_Forum</a>
+
+		</div>
+  	</div>
+  	  	<div class="row copyright">
+	    <div class="col-sm-10 col-xs-12">
+	        <p>2012-2014 <a href="http://www.shellgui.com" target="_blank">ShellGui.com</a>All rights reserved</p>
+	    </div>
+	</div>
+</div>
+</footer>
+EOF
+fi
+}
+nav_status()
+{
+# if
+# check_admin_session
+# then
+uptimes=`awk '{printf("%d:%02d:%02d:%02d",($1/60/60/24),($1/60/60%24),($1/60%60),($1%60))}' /proc/uptime`
+days=`echo $uptimes | awk -F ":" {'print $1'}`
+hours=`echo $uptimes | awk -F ":" {'print $2'}`
+mins=`echo $uptimes | awk -F ":" {'print $3'}`
+secs=`echo $uptimes | awk -F ":" {'print $4'}`
+cpuload="`busybox top -n 1 | grep -i "^CPU.*:" | awk {'print $2'} | sed 's/%.*/%/g'`"
+memload=`free | awk '/^Mem/ {printf("%u%%", 100*$3/$2);}'`
+ # > $DOCUMENT_ROOT/../tmp/nav_status.json
+cat <<EOF
+{
+  "uptimes": {
+    "days": "$days",
+    "hours": "$hours",
+    "mins": "$mins",
+    "secs": "$secs"
+  },
+  "hwstatus": {
+    "cpuload": "$cpuload",
+    "memload": "$memload"
+  }
+}
+EOF
+# fi
+}
+html_nav()
+{
+if
+check_admin_session
+then
+nav_status_str=`nav_status`
+eval uptimes_days=`echo "$nav_status_str" | jq '.["uptimes"]["days"]'`
+eval uptimes_hours=`echo "$nav_status_str" | jq '.["uptimes"]["hours"]'`
+eval uptimes_mins=`echo "$nav_status_str" | jq '.["uptimes"]["mins"]'`
+eval uptimes_secs=`echo "$nav_status_str" | jq '.["uptimes"]["secs"]'`
+eval hwstatus_cpuload=`echo "$nav_status_str" | jq '.["hwstatus"]["cpuload"]'`
+eval hwstatus_memload=`echo "$nav_status_str" | jq '.["hwstatus"]["memload"]'`
+nav_status_str=''
+fi
+cat <<EOF
+<header class="navbar navbar-inverse navbar-fixed-top bs-nav" role="banner">
+  <div class="container">
+    <div class="navbar-header">
+      <button class="navbar-toggle" type="button" data-toggle="collapse" data-target=".bs-navbar-collapse">
+        <span class="sr-only">Toggle navigation</span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+     <a href="/index.cgi" class="navbar-brand"><span class="glyphicon glyphicon-home"></span></a>
+    </div>
+    <nav class="collapse navbar-collapse bs-navbar-collapse" role="navigation">
+		<ul class="nav navbar-nav">
+                <li class="active"><a href="/index.cgi`[ -n "$FORM_app" ] && echo "?app=$FORM_app"`" style="height: 58px;">`echo $tittle | grep "." || echo $_LANG_App_name`
+</a></li>
+EOF
+(check_admin_session && [ "$FORM_app" != "appstore" ]) && cat <<EOF
+        <li ><a href="/index.cgi?app=appstore" style="height: 58px;">`cat $DOCUMENT_ROOT/../tmp/home.json | jq '.["i18n"]["app"]["appstore"]["'$lang'"]' | sed -e 's/^"//g' -e 's/"$//g'`</a></li>
+EOF
+cat <<EOF
+        </ul>
+EOF
+echo '<ul class="nav navbar-nav navbar-right">'
+check_admin_session && cat <<EOF
+<li id="device_info_status">
+<a>
+<span>$_LANG_Runed $uptimes_days $_LANG_Days $uptimes_hours $_LANG_Hours $uptimes_mins $_LANG_Mins $uptimes_secs $_LANG_Secs</span>
+<img src="/apps/home/imgs/cpu.png" alt="alttext" title="titletext" /> $hwstatus_cpuload
+<img src="/apps/home/imgs/mem.png" alt="alttext" title="titletext" /> $hwstatus_memload </a>
+</li>
+<li id="headernotice" style="display:none" class="dropdown">
+  <a class="dropdown-toggle" data-toggle="dropdown" href="#">
+    <span class="badge alert-info pull-right" id="noticebadge">0</span>
+    $_LANG_Message
+  </a>
+<ul style="width:300px" class="dropdown-menu" role="menu">
+<div id="notice_nav_list"></div>
+	<li class="list-group-item list-group-item-info">
+		<div class="row">
+		<div class="col-xs-3"></div>
+		<div class="col-xs-6"><a href="index.cgi?app=notice">$_LANG_Read_More</a></div>
+		<div class="col-xs-3"></div>
+		</div>
+	</li>
+</ul>
+</li>
+EOF
+# 多语言块
+cat <<EOF
+		<li id="fat-menu" class="dropdown">
+		  <a class="dropdown-toggle" data-toggle="dropdown" href="#">$lang<b class="caret"></b></a>
+			<ul class="dropdown-menu" role="menu">
+EOF
+app_langs=`cat $DOCUMENT_ROOT/../tmp/home.json | jq '.["i18n"]["app"]["'$FORM_app'"] | keys[]' | grep -Po '[\w].*[\w]'`
+for app_lang in `echo "$app_langs" | grep -v "^$lang$"`
+do
+echo "<li><a href=\"index.cgi?app=home&action=change&lang=${app_lang}\">${app_lang}</a></li>"
+done
+
+cat <<EOF
+			</ul>
+        </li>
+EOF
+check_admin_session && cat <<EOF
+                <li><a href="index.cgi?app=home&action=logout">$_LANG_Logout</a></li>       	
+EOF
+echo '</ul>'
+cat <<EOF
+    </nav>
+  </div>
+</header>
+EOF
+
+cat <<'EOF'
+<script type="text/javascript">
+var refreshint;
+refreshint = setInterval("refresh_device_status()", 5000);
+
+function refresh_device_status()
+{
+  var url = 'index.cgi?app=home&action=refresh_status';
+  Ha.common.ajax(url, 'html', '', 'get', '', function(data){
+    $('#device_info_status').html(data);
+  }, 1);
+}
+$(function(){
+  var url = 'index.cgi?app=notice&action=get_notice_unread_json';
+  Ha.common.ajax(url, 'json', '', 'get', '', function(data){
+    if (data.status == 0){
+      if (data.count > 0) {
+        $('#noticebadge').html(data.count);
+        $('#headernotice').show();
+      }
+    }
+  }, 1);
+});
+$(function(){
+  $('#headernotice').on('click', function(e){
+	//var $btn = $(this);
+   // $btn.button('loading');
+  //var host=document.getElementById("traceroute_host").value;
+  var url = 'index.cgi?app=notice&action=get_pregress_schedule_notice';
+  Ha.common.ajax(url, 'html', '', 'get', '', function(data){
+    $('#notice_nav_list').html(data);
+	$btn.button('reset');
+  }, 1);
+  });
+});
+</script>
+EOF
+
+# $(function(){
+  # var url = 'index.cgi?app=notice&action=get_read';
+  # Ha.common.ajax(url, 'json', '', 'get', '', function(data){
+    # if (data.status == 0){
+      # if (data.count > 0) {
+        # $('#noticebadge').html(data.count);
+        # $('#headernotice').show();
+      # }
+    # }
+  # }, 1);
+# });
+}
+
+go_app()
+{
+export lang=`main.sbin get_client_lang`
+eval `cat $DOCUMENT_ROOT/apps/home/i18n/$lang/i18n.conf | sed 's/^/export /g'`
+main.sbin check_admin_session || if
+[ "$FORM_app" != "login" ]
+then
+	if
+	[ "$FORM_app" = "home" ] && [ "$FORM_action" = "change" ] && [ -n "$FORM_lang" ]
+	then
+$DOCUMENT_ROOT/apps/home/index.cgi
+	else
+	main.sbin header_jump "index.cgi?app=login"
+	exit 1
+	fi
+fi
+POST_str=`export | grep "^export FORM_" | sed 's/^export FORM_//g'`
+
+export is_main_page=`echo "$POST_str" | wc -l `
+[ -n "$FORM_app" ] && [ -z "$FORM_action" ] && is_main_page=1
+
+if
+[ $is_main_page = 1 ]
+then
+[ -z "$HEADER_POST" ] && html_head && export HEADER_POST=1
+echo "</head>"
+echo '<body>'
+echo '<div class="notification-bar ajax-notification-bar"><a href="javascript:;" class="close">&times;</a></div>'
+check_admin_session && nav_status >/dev/null 2>&1
+html_nav
+echo '<div id="top"></div>'
+echo '<div class="container">'
+echo '<br><br>'
+# check_admin_session || export FORM_app=login
+export lang=`main.sbin get_client_lang`
+
+$DOCUMENT_ROOT/apps/$FORM_app/index.sh
+[ $? -ne 0 ] && echo "$_LANG_Error"
+echo '</div>'
+[ -z "$FOOT_POST" ] && main.sbin html_foot && export FOOT_POST=1
+echo "</body>"
+echo "</html>"
+else
+# echo ''
+# check_admin_session || export FORM_app=login
+$DOCUMENT_ROOT/apps/$FORM_app/index.sh
+fi
+exit 0
+}
+create_admin_session()
+{
+SESSION_ID=`echo "$REMOTE_ADDR
+$HTTP_HOST
+$HTTP_USER_AGENT
+$HTTP_ACCEPT_LANGUAGE
+$HTTP_ACCEPT_ENCODING" | grep -Po [\w] | md5sum | cut -c 1-12`
+head $DOCUMENT_ROOT/../tmp/admin_session.json | grep -q "{" && admin_session_str=`cat $DOCUMENT_ROOT/../tmp/admin_session.json`
+if
+[ -z "$admin_session_str" ]
+then
+cat <<EOF  > $DOCUMENT_ROOT/../tmp/admin_session.json
+{
+"$SESSION_ID": {"REMOTE_ADDR":"$REMOTE_ADDR","REMOTE_HOST":"$REMOTE_HOST","HTTP_USER_AGENT":"$HTTP_USER_AGENT","LOGIN_TIME":"`date +%s`"}}
+EOF
+else
+	if
+	[ "$2" = "logout" ]
+	then
+	LOGIN_TIME=0
+	else
+	LOGIN_TIME=`date +%s`
+	fi
+echo "$admin_session_str" | jq '."'$SESSION_ID'" = {"REMOTE_ADDR":"'$REMOTE_ADDR'","REMOTE_HOST":"'$REMOTE_HOST'","HTTP_USER_AGENT":"'"$HTTP_USER_AGENT"'","LOGIN_TIME":"'$LOGIN_TIME'"}' > $DOCUMENT_ROOT/../tmp/admin_session.json
+fi
+}
+check_admin_session()
+{
+SESSION_ID=`echo "$REMOTE_ADDR
+$HTTP_HOST
+$HTTP_USER_AGENT
+$HTTP_ACCEPT_LANGUAGE
+$HTTP_ACCEPT_ENCODING" | grep -Po [\w] | md5sum | cut -c 1-12`
+LOGIN_TIME=`cat $DOCUMENT_ROOT/../tmp/admin_session.json | jq -r '.["'"$SESSION_ID"'"]["LOGIN_TIME"]'`
+[ $? -ne 0 ] && return 1
+[ -z "$LOGIN_TIME" ] && LOGIN_TIME=0
+if
+[ `expr $(date +%s) - $LOGIN_TIME` -lt `grep "^session_time=" $DOCUMENT_ROOT/apps/home/home.conf | grep -Po "[0-9]*"` ]
+then
+return 0
+else
+return 1
+fi
+}
+get_client_lang()
+{
+maybe_lang()
+	{
+		for i in `echo "$HTTP_ACCEPT_LANGUAGE" | sed -e 's/;.*//g' -e's/,/\n/g' | tr A-Z a-z`
+		do
+		find $DOCUMENT_ROOT/apps/$FORM_app/i18n -type d -maxdepth 1 | awk -F "i18n/" {'print $2'} | sed '/^$/d' | grep "$i"
+		break
+		done | grep -E "." || echo "en"
+	}
+lang_seted=`cat $DOCUMENT_ROOT/../tmp/home.json | jq '.["setting"]["default_lang"]' | sed -e 's/^\"//g' -e's/\"$//g'`
+if
+[ -z "$lang_seted" ]
+then
+echo `maybe_lang`
+exit 0
+fi
+if
+[ "$lang_seted" = "null" ]
+then
+lang=`maybe_lang`
+home_data=`cat $DOCUMENT_ROOT/../tmp/home.json`
+echo "$home_data" | jq '.["setting"] = .["setting"] + {"default_lang":"'$lang'"}' > $DOCUMENT_ROOT/../tmp/home.json
+echo $lang
+else
+echo $lang_seted
+fi
+}
+get_stdin()
+{
+IFSbak=$IFS
+IFS="\n"
+while read -r line
+do
+echo "${line}"
+done
+IFS=$IFSbak
+}
+regx_str()
+{
+case $1 in
+islang_en)
+str="`get_stdin`"
+if
+[ `expr length "$(echo "$str" | sed 's/[a-zA-Z]//g')"` -eq 0 ]
+then
+exit 0
+else
+exit 1
+fi
+;;
+islang_cn)
+str="`get_stdin`"
+if
+[ `expr length "$(echo "$str" | sed 's/[^\x{4e00}-\x{9fa5}| ]//g')"` -eq 0 ]
+then
+exit 0
+else
+exit 1
+fi
+;;
+islang_alb)
+str="`get_stdin`"
+if
+[ `expr length "$(echo "$str" | sed 's/[0-9]//g')"` -eq 0 ]
+then
+exit 0
+else
+exit 1
+fi
+;;
+islang_enalb)
+str="`get_stdin`"
+if
+[ `expr length "$(echo "$str" | sed 's/[a-zA-Z0-9]//g')"` -eq 0 ]
+then
+exit 0
+else
+exit 1
+fi
+;;
+isip_ipv4)
+str="`get_stdin`"
+if
+[ `expr length "$(echo "$str" | sed 's/[0-9]\{1,3\}\.[0-9]\{1,3\}\.[0-9]\{1,3\}\.[0-9]\{1,3\}//g')"` -eq 0 ]
+then
+exit 0
+else
+exit 1
+fi
+;;
+isip_ipv6)
+str="`get_stdin`"
+regex='(?>(?>([a-f\d]{1,4})(?>:(?1)){3}|(?!(?:.*[a-f\d](?>:|$)){})((?1)(?>:(?1)){0,6})?::(?2)?)|(?>(?>(?1)(?>:(?1)){5}:|(?!(?:.*[a-f\d]:){6,})(?3)?::(?>((?1)(?>:(?1)){0,4}):)?)?(25[0-5]|2[0-4]\d|1\d{2}|[1-9]?\d)(?>\.(?4)){3}))\/\d{1,2}'
+
+if
+[ "$str" = "$(echo "$str" | grep -Po "$regex")" ]
+then
+exit 0
+else
+exit 1
+fi
+;;
+isurl)
+str="`get_stdin`"
+regex='(https?|ftp|file)://[-A-Za-z0-9\+&@#/%?=~_|!:,.;]*[-A-Za-z0-9\+&@#/%=~_|]'
+if
+[ "$str" = "$(echo "$str" | grep -Po "$regex")" ]
+then
+exit 0
+else
+exit 1
+fi
+;;
+isdomain)
+str="`get_stdin`"
+regex='(?=^.{4,255}$)(^((?!-)[a-zA-Z0-9-]{1,63}(?<!-)\.)+[a-zA-Z]{2,63}$)'
+if
+[ "$str" = "$(echo "$str" | grep -Po "$regex")" ]
+then
+exit 0
+else
+exit 1
+fi
+;;
+ismac)
+str="`get_stdin`"
+regex='^([0-9a-fA-F]{2}:){5}[0-9a-fA-F]{2}$'
+if
+[ "$str" = "$(echo "$str" | grep -Po "$regex")" ]
+then
+exit 0
+else
+exit 1
+fi
+;;
+ispath)
+str="`get_stdin`"
+regex='^(((/)?[\w|\.]*)*)'
+[ "$str" = "/" ] && exit 0
+if
+[ "$str" = "$(echo "$str" | grep -Po "$regex")" ]
+then
+exit 0
+else
+exit 1
+fi
+;;
+esac
+}
+output_json()
+{
+msg=`echo "$(get_stdin)"`
+cat <<EOF
+
+{"status":$1,"msg":"$msg"}
+EOF
+exit 1
+}
+home_index()
+{
+for lang in `find $DOCUMENT_ROOT/apps/home/i18n -type d -maxdepth 1 | awk -F "i18n/" {'print $2'} | sed '/^$/d'`
+do
+# 载入所有app目录
+apps=`find $DOCUMENT_ROOT/apps -type d -maxdepth 1 | awk -F "apps/" {'print $2'} | sed '/^$/d'`
+# 载入app缓存文件
+home_data=`cat $DOCUMENT_ROOT/../tmp/home.json`
+# 如果文件不是json文件或不存在，填充home json默认格式
+head $DOCUMENT_ROOT/../tmp/home.json | grep -q "{" || echo "{\"apps\":{}}" > $DOCUMENT_ROOT/../tmp/home.json
+# 
+	for app in $apps
+	do
+		eval `cat $DOCUMENT_ROOT/apps/$app/config.conf | grep -E "^type=|^status=|^version"`
+		eval `head $DOCUMENT_ROOT/apps/${app}/i18n/$lang/i18n.conf | grep "^_LANG_App_"`
+		home_data=`cat $DOCUMENT_ROOT/../tmp/home.json`
+		new_home_data=`echo "$home_data" | jq '.["apps"]['\"$type\"'] = .["apps"]['\"$type\"'] + {"'$app'": {"status":"'$status'","version":"'$version'"}}' | jq '.["i18n"]["type"]['\"$type\"'] = .["i18n"]["type"]['\"$type\"'] + {"'$lang'":"'"$_LANG_App_type"'"}' | jq '.["i18n"]["app"]['\"$app\"'] = .["i18n"]["app"]['\"$app\"'] + {"'$lang'":"'"$_LANG_App_name"'"}'`
+		echo "$new_home_data"> $DOCUMENT_ROOT/../tmp/home.json
+	done
+done
+}
+header_jump()
+{
+# echo -ne "Location: $1\n\n"
+cat <<EOF
+<HTML> 
+<head> 
+<meta http-equiv="Refresh" content="0;URL=$1"> 
+</head> 
+<body> 
+</body> 
+</HTML>
+EOF
+}
+
+days_from_to()
+{
+# 1970-01-01 2012-09-11
+date -d $2 >/dev/null 2>&1 && date -d $3 >/dev/null 2>&1
+if
+[ $? -ne 0 ]
+then
+echo "illegal date format."
+exit 1
+fi
+if
+[ `expr $(date -d $3 +%s) - $(date -d $2 +%s)` -lt 0 ]
+then
+echo "option 2 must more then option 1."
+exit 1
+fi
+
+BEGIN_year=`echo $2 | awk -F "-" {'print $1'}`
+END_year=`echo $3 | awk -F "-" {'print $1'}`
+YEAR_diff=$(expr $END_year - $BEGIN_year)
+LEAP_days=`expr $YEAR_diff / 4`
+OLD_cost=`date -d $2 +%j`
+NEW_add=`date -d $3 +%j`
+days=`expr $(expr $YEAR_diff \* 365) + $LEAP_days - $OLD_cost + $NEW_add`
+echo $days
+}
+
+if
+echo $* | grep -q " .*=.* "
+then
+IFS_bak=$IFS
+IFS="|"
+for i in $@
+do
+name=`echo $i | sed 's/=[^=]*$//'`
+value=`echo "$i" | sed 's/^[^=]*=//'`
+export $name="$value"
+done
+IFS=$IFS_bak
+fi
+export DOCUMENT_ROOT=$(readlink -f $0 | sed 's#apps/home/main.sbin##')
+case $1 in
+go_app)
+go_app $*
+;;
+regx_str)
+[ -n "$2" ] || exit 1
+regx_str $2
+;;
+output_json)
+if
+[ $2 -eq 0 ]
+then
+output_json $2
+elif
+[ $2 -eq 1 ]
+then
+output_json $2
+else
+exit 1
+fi
+
+;;
+days_from_to)
+days_from_to $*
+;;
+create_admin_session)
+create_admin_session $*
+;;
+check_admin_session)
+check_admin_session
+;;
+get_client_lang)
+get_client_lang
+;;
+check_root_password)
+check_root_password
+;;
+html_head)
+html_head
+;;
+html_foot)
+html_foot
+;;
+html_nav)
+html_nav
+;;
+nav_status)
+nav_status
+;;
+home_index)
+home_index
+;;
+header_jump)
+header_jump $2
+;;
+storage_size_conver)
+storage_size_conver $2
+;;
+notice)
+notice
+;;
+pregress_schedule)
+pregress_schedule
+;;
+httpd_modules)
+httpd_modules
+;;
+httpd_simple_vhost)
+httpd_simple_vhost
+;;
+httpd_proxy)
+httpd_proxy
+;;
+httpd_fastcgi)
+httpd_fastcgi
+;;
+httpd_cgi)
+httpd_cgi
+;;
+httpd_webdav)
+httpd_webdav
+;;
+httpd_htpass)
+httpd_htpass
+;;
+httpd_others)
+httpd_others
+;;
+pid_uptime)
+pid_uptime $2
+;;
+where_DOCUMENT_ROOT)
+where_DOCUMENT_ROOT
+;;
+http_download)
+http_download $2
+;;
+init)
+init
+;;
+fw_init)
+fw_init
+;;
+fw_stop)
+fw_stop
+;;
+stop_all_service)
+stop_all_service
+;;
+esac

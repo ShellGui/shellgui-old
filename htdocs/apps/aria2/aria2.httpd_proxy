@@ -1,0 +1,4 @@
+
+$HTTP["url"] =~ "/jsonrpc" {   
+proxy.server  = ("/jsonrpc"=> (( "host" => "127.0.0.1", "port" => 6800 )))
+}

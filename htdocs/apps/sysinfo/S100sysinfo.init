@@ -1,0 +1,22 @@
+#!/bin/sh
+start()
+{
+[ -z "$DOCUMENT_ROOT" ] && export DOCUMENT_ROOT=`main.sbin where_DOCUMENT_ROOT`
+ntpd_pid=`ps aux |grep -v grep | grep "busybox[ ]*ntpd" | grep "^root" | sed -n 1p | awk {'print $2'}`
+[ -n "$ntpd_pid" ] && kill -9 $ntpd_pid
+
+servers=`grep -E "server[0-9]*=" $DOCUMENT_ROOT/apps/sysinfo/sysinfo.conf | awk -F "=" {'print $2'} | tr '\n' ' '`
+if
+grep -qE "^1$" $DOCUMENT_ROOT/apps/sysinfo/sysinfo.conf
+then
+$DOCUMENT_ROOT/../bin/busybox ntpd -n -l -p $servers >/dev/null 2>&1 &
+else
+$DOCUMENT_ROOT/../bin/busybox ntpd -n -p $servers >/dev/null 2>&1 &
+fi
+}
+stop()
+{
+ntpd_pid=`ps aux |grep -v grep | grep "busybox[ ]*ntpd" | grep "^root" | sed -n 1p | awk {'print $2'}`
+[ -n "$ntpd_pid" ] && kill -9 $ntpd_pid
+}
+[ -z "$1" ] && start || $1
