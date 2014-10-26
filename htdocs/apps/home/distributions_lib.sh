@@ -16,15 +16,15 @@ fi
 if
 echo $OS | grep -qi "centos"
 then
-distribution=centos-$(echo $OS | grep -Po '[0-9].*[0-9]' | sed 's/\..*/\.x/g')
+distribution=centos-$(echo $OS | grep -Po '[0-9].*[0-9]*' | sed -e 's/\..*//g' -e 's/$/\.x/g')
 elif
 echo $OS | grep -qi "debian"
 then
-distribution=debian-$(echo $OS | grep -Po '[0-9].*[0-9]' | sed 's/\..*/\.x/g')
+distribution=debian-$(echo $OS | grep -Po '[0-9].*[0-9]*' | sed -e 's/\..*//g' -e 's/$/\.x/g')
 elif
 echo $OS | grep -qi "ubuntu"
 then
-distribution=ubuntu-$(echo $OS | grep -Po '[0-9].*[0-9]' | sed 's/\..*/\.x/g')
+distribution=ubuntu-$(echo $OS | grep -Po '[0-9].*[0-9]*' | sed -e 's/\..*//g' -e 's/$/\.x/g')
 else
 distribution=unknow
 fi
