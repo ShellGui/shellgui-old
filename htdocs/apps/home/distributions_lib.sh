@@ -4,6 +4,10 @@ if
 [ -z "$OS" ]
 then
 	if
+	[ -f /etc/system-release ]
+	then
+	OS=`cat /etc/system-release | sed -n 1p`
+	elif
 	[ -f /etc/openwrt_release ]
 	then
 	eval  /etc/openwrt_release
