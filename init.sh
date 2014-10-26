@@ -163,21 +163,21 @@ install_centos_depends()
 {
 yum update -y || exit 1
 yum groupinstall "Development Tools" -y || exit 1
-yum install -y pcre-devel zlib-devel openssl-devel bc tzdata iptables-devel bridge-utils || exit 1
+yum install -y pcre-devel zlib-devel openssl-devel bc tzdata iptables-devel bridge-utils unzip || exit 1
 # tunctl
 }
 
 install_ubuntu_depends()
 {
 apt-get update --fix-missing || exit 1
-apt-get install -y build-essential autoconf openssl libssl-dev libpcre3 libpcre3-dev curl zlib1g.dev tzdata iptables-dev bridge-utils || exit 1
+apt-get install -y build-essential autoconf openssl libssl-dev libpcre3 libpcre3-dev curl zlib1g.dev tzdata iptables-dev bridge-utils unzip || exit 1
 # uml-utilities
 
 }
 install_debian_depends()
 {
 apt-get update --fix-missing || exit 1
-apt-get install -y build-essential autoconf openssl libssl-dev libpcre3 libpcre3-dev curl zlib1g.dev tzdata iptables-dev bridge-utils || exit 1
+apt-get install -y build-essential autoconf openssl libssl-dev libpcre3 libpcre3-dev curl zlib1g.dev tzdata iptables-dev bridge-utils unzip || exit 1
 # uml-utilities
 }
 build_proccgi()
