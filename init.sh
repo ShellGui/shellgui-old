@@ -1,6 +1,7 @@
 #!/bin/sh
 
 HOME_DIR=$(dirname $(readlink -f $0))
+du -s ./htdocs/ | grep "[0-9][0-9]*" > /den/null 2>&1|| HOME_DIR=$HOME_DIR/shellgui
 DOCUMENT_ROOT=$HOME_DIR/htdocs
 echo $PATH | sed 's/:/\n/g' | grep -q "^/sbin$" || export PATH=$PATH:/sbin
 echo $PATH | sed 's/:/\n/g' | grep -q "^/bin$" || export PATH=$PATH:/bin
@@ -36,10 +37,8 @@ else
 echo "Wrong Port!!" && exit 2
 fi
 }
-
-do_downloads()
+download_shellgui()
 {
-
 if
 du -s $HOME_DIR/htdocs | grep "[0-9][0-9]*"
 then
@@ -48,7 +47,9 @@ else
 curl -L "https://github.com/ShellGui/shellgui/archive/master.zip" -o $HOME_DIR/sources/shellgui-master.zip || \
 wget --no-check-certificate "https://github.com/ShellGui/shellgui/archive/master.zip" -O $HOME_DIR/sources/shellgui-master.zip
 fi
-
+}
+do_downloads()
+{
 if
 [ -f $HOME_DIR/sources/lighttpd-1.4.35.tar.gz ] && [ `md5sum $HOME_DIR/sources/lighttpd-1.4.35.tar.gz | awk {'print $1'}` = "69057685df672218d45809539b874917" ]
 then
@@ -257,23 +258,22 @@ work()
 [ -d $HOME_DIR/logs ] || mkdir $HOME_DIR/logs
 [ -d $HOME_DIR/sources ] || mkdir $HOME_DIR/sources
 [ -d $HOME_DIR/ssl ] || mkdir $HOME_DIR/ssl
-
-. $DOCUMENT_ROOT/apps/home/distributions_lib.sh
-echo "$OS" | grep -i "centos" && install_centos_depends
-echo "$OS" | grep -i "ubuntu" && install_ubuntu_depends
-echo "$OS" | grep -i "debian" && install_debian_depends
-
-do_downloads
+download_shellgui
 if
-du -s $HOME_DIR/htdocs | grep "[0-9][0-9]*"
+du -s $HOME_DIR/htdocs > /den/null 2>&1 | grep "[0-9][0-9]*"
 then
 echo "Already have docs"
 else
 cd $HOME_DIR/sources/
 unzip shellgui-master.zip
 cd shellgui-master
-cp -R htdocs $HOME_DIR
+cp -R * $HOME_DIR
 fi
+do_downloads
+. $DOCUMENT_ROOT/apps/home/distributions_lib.sh
+echo "$OS" | grep -i "centos" && install_centos_depends
+echo "$OS" | grep -i "ubuntu" && install_ubuntu_depends
+echo "$OS" | grep -i "debian" && install_debian_depends
 
 cd $HOME_DIR/bin
 ln -s  ../htdocs/apps/home/main.sbin main.sbin
@@ -305,6 +305,7 @@ admin
 admin
 ########################################
 EOF
+rm -rf $(readlink -f $0)
 }
 error=0
 [ ! -x $HOME_DIR/bin/proccgi ] && error=`expr $error + 1`
