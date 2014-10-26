@@ -1,7 +1,7 @@
 #!/bin/sh
 
 HOME_DIR=$(dirname $(readlink -f $0))
-du -s ./htdocs/ | grep "[0-9][0-9]*" > /dev/null 2>&1|| HOME_DIR=$HOME_DIR/shellgui
+du -s $HOME_DIR/htdocs 2>&1 | grep -q "^[0-9][0-9]*" || HOME_DIR=$HOME_DIR/shellgui
 DOCUMENT_ROOT=$HOME_DIR/htdocs
 echo $PATH | sed 's/:/\n/g' | grep -q "^/sbin$" || export PATH=$PATH:/sbin
 echo $PATH | sed 's/:/\n/g' | grep -q "^/bin$" || export PATH=$PATH:/bin
@@ -260,7 +260,7 @@ work()
 [ -d $HOME_DIR/ssl ] || mkdir $HOME_DIR/ssl
 download_shellgui
 if
-du -s $HOME_DIR/htdocs > /dev/null 2>&1 | grep "[0-9][0-9]*"
+du -s $HOME_DIR/htdocs 2>&1 | grep -q "^[0-9][0-9]*"
 then
 echo "Already have docs"
 else
