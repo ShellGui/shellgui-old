@@ -16,6 +16,35 @@ then
 echo "must run in user of root group"
 exit 1
 fi
+OS=`cat /etc/issue | sed -n 1p | awk -F '\' {'print $1'}`
+if
+[ -z "$OS" ]
+then
+	if
+	[ -f /etc/openwrt_release ]
+	then
+	eval  /etc/openwrt_release
+	OS=$DISTRIB_DESCRIPTION
+	else
+	OS="Unknow"
+	fi
+fi
+
+if
+echo $OS | grep -qi "centos"
+then
+distribution=centos-$(echo $OS | grep -Po '[0-9].*[0-9]' | sed 's/\..*/\.x/g')
+elif
+echo $OS | grep -qi "debian"
+then
+distribution=debian-$(echo $OS | grep -Po '[0-9].*[0-9]' | sed 's/\..*/\.x/g')
+elif
+echo $OS | grep -qi "ubuntu"
+then
+distribution=ubuntu-$(echo $OS | grep -Po '[0-9].*[0-9]' | sed 's/\..*/\.x/g')
+else
+distribution=unknow
+fi
 ask()
 {
 echo -n "Bind to(127.0.0.1/0.0.0.0/Your IP:)"
@@ -40,7 +69,7 @@ fi
 download_shellgui()
 {
 if
-du -s $HOME_DIR/htdocs | grep "[0-9][0-9]*"
+du -s $HOME_DIR/htdocs 2>&1 | grep -q "[0-9][0-9]*"
 then
 echo "Already have docs"
 else
@@ -259,6 +288,9 @@ work()
 [ -d $HOME_DIR/sources ] || mkdir $HOME_DIR/sources
 [ -d $HOME_DIR/ssl ] || mkdir $HOME_DIR/ssl
 download_shellgui
+echo "$OS" | grep -i "centos" && install_centos_depends
+echo "$OS" | grep -i "ubuntu" && install_ubuntu_depends
+echo "$OS" | grep -i "debian" && install_debian_depends
 if
 du -s $HOME_DIR/htdocs 2>&1 | grep -q "^[0-9][0-9]*"
 then
@@ -270,10 +302,6 @@ cd shellgui-master
 cp -R * $HOME_DIR
 fi
 do_downloads
-. $DOCUMENT_ROOT/apps/home/distributions_lib.sh
-echo "$OS" | grep -i "centos" && install_centos_depends
-echo "$OS" | grep -i "ubuntu" && install_ubuntu_depends
-echo "$OS" | grep -i "debian" && install_debian_depends
 
 cd $HOME_DIR/bin
 ln -s  ../htdocs/apps/home/main.sbin main.sbin

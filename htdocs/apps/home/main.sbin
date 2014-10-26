@@ -129,9 +129,10 @@ done
 http_download()
 {
 [ -f $1 ] || exit 1
+[ -n "$2" ] && filename=$2 || filename=`basename $1`
 cat <<EOF
 Content-Type:application/x-download
-Content-Disposition: attachment; filename=`basename $1`
+Content-Disposition: attachment; filename=$filename
 
 EOF
 cat $1
@@ -1374,7 +1375,7 @@ where_DOCUMENT_ROOT)
 where_DOCUMENT_ROOT
 ;;
 http_download)
-http_download $2
+http_download $2 $3
 ;;
 init)
 init

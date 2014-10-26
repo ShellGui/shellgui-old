@@ -264,6 +264,7 @@ echo "Compare $old_md5 $new_md5"
 done
 find $DOCUMENT_ROOT/../tmp/app_install_tmp/ -type f | grep "\.sh$" | xargs chmod +x
 find $DOCUMENT_ROOT/../tmp/app_install_tmp/ -type f | grep "\.fw$" | xargs chmod +x
+find $DOCUMENT_ROOT/../tmp/app_install_tmp/ -type f | grep "\.sbin$" | xargs chmod +x
 find $DOCUMENT_ROOT/../tmp/app_install_tmp/ -type f | grep "\.init$" | xargs chmod +x
 return 0
 }
