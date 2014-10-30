@@ -20,3 +20,13 @@ curl -L "https://github.com/ShellGui/shellgui/raw/master/init.sh" -o init.sh
 chmod +x init.sh
 ./init.sh</code></pre>
 
+Screenshots
+========
+<label>Home</label>
+![ShellGui Home](https://raw.githubusercontent.com/ShellGui/shellgui/master/Screenshots/Screenshot-Home.png)
+<label>Appstore</label>
+![ShellGui Appstore](https://raw.githubusercontent.com/ShellGui/shellgui/master/Screenshots/Screenshot-Appstore.png)
+<label>Notice</label>
+![ShellGui Notice](https://raw.githubusercontent.com/ShellGui/shellgui/master/Screenshots/Screenshot-Notice.png)
+<label>Sysinfo</label>
+![ShellGui Sysinfo](https://raw.githubusercontent.com/ShellGui/shellgui/master/Screenshots/Screenshot-Sysinfo.png)
