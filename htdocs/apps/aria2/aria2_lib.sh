@@ -1,29 +1,31 @@
 #!/bin/sh
 
-packagename="aria2"
-version="1.17.1"
-arch="tar.bz2"
-download_url="http://iweb.dl.sourceforge.net/project/aria2/stable/aria2-1.17.1/"
 
 download_aria2()
 {
-if
-[ "$(md5sum $DOCUMENT_ROOT/../sources/$packagename-$version.$arch | awk {'print $1'})" != "86229ef8d289893934cb3af25c8fddf6" ]
-then
-rm -f $DOCUMENT_ROOT/../sources/$packagename-$version.$arch
-curl -L "$download_url$packagename-$version.$arch" -o $DOCUMENT_ROOT/../sources/$packagename-$version.$arch 2>&1
-fi
+export download_json='{
+"file_name":"aria2-1.17.1.tar.bz2",
+"downloader":"curl wget",
+"save_dest":"$DOCUMENT_ROOT/../sources/aria2-1.17.1.tar.bz2",
+"useragent":"Mozilla/4.0 (compatible; MSIE 6.1; Windows XP)",
+"timeout":20,
+"md5sum":"86229ef8d289893934cb3af25c8fddf6",
+	"download_urls":{
+	"url_1":"http://iweb.dl.sourceforge.net/project/aria2/stable/aria2-1.17.1/aria2-1.17.1.tar.bz2",
+	"url_2":"http://x.vm0.ru/wl500g-repo/sources-mirror/aria2-1.17.1.tar.bz2"
+	}
+}'
+main.sbin download
 }
 
 
 
 make_aria2()
 {
-
 cd $DOCUMENT_ROOT/../sources/
-rm -rf $packagename-$version
-tar jxvf $packagename-$version.$arch
-cd $DOCUMENT_ROOT/../sources/$packagename-$version
+rm -rf $DOCUMENT_ROOT/../sources/aria2-1.17.1
+tar jxvf aria2-1.17.1.tar.bz2
+cd $DOCUMENT_ROOT/../sources/aria2-1.17.1
 ./configure --prefix=$DOCUMENT_ROOT/../ --without-sqlite3 && make && make install
 
 }

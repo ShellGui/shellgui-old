@@ -194,23 +194,26 @@ echo "/usr/local/jemalloc/lib" > /etc/ld.so.conf.d/jemalloc.conf
 
 install_centos_depends()
 {
+yum reomove -y jq
 yum update -y || exit 1
 yum groupinstall "Development Tools" -y || exit 1
-yum install -y pcre-devel zlib-devel openssl-devel bc tzdata iptables-devel bridge-utils unzip || exit 1
+yum install -y pcre-devel zlib-devel openssl-devel bc tzdata iptables-devel curl wget bridge-utils unzip || exit 1
 # tunctl
 }
 
 install_ubuntu_depends()
 {
+apt-get reomove -y jq
 apt-get update --fix-missing || exit 1
-apt-get install -y build-essential autoconf openssl libssl-dev libpcre3 libpcre3-dev curl zlib1g.dev tzdata iptables-dev bridge-utils unzip || exit 1
+apt-get install -y build-essential autoconf openssl libssl-dev libpcre3 libpcre3-dev curl wget zlib1g.dev tzdata iptables-dev bridge-utils unzip || exit 1
 # uml-utilities
 
 }
 install_debian_depends()
 {
+apt-get remove -y jq
 apt-get update --fix-missing || exit 1
-apt-get install -y build-essential autoconf openssl libssl-dev libpcre3 libpcre3-dev curl zlib1g.dev tzdata iptables-dev bridge-utils unzip || exit 1
+apt-get install -y build-essential autoconf openssl libssl-dev libpcre3 libpcre3-dev curl wget zlib1g.dev tzdata iptables-dev bridge-utils unzip || exit 1
 # uml-utilities
 }
 build_proccgi()

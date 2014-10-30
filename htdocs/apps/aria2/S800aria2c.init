@@ -1,5 +1,5 @@
 #!/bin/sh
-enable=1
+enable=0
 start()
 {
 [ -z "$DOCUMENT_ROOT" ] && export DOCUMENT_ROOT=`main.sbin where_DOCUMENT_ROOT`

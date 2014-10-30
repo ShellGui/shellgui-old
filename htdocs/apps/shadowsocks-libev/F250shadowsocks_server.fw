@@ -1,0 +1,95 @@
+#!/bin/sh
+
+shadowsocks_libev_str=`cat $DOCUMENT_ROOT/apps/shadowsocks-libev/shadowsocks_libev.json`
+
+grep -q "enable=1" $DOCUMENT_ROOT/apps/shadowsocks-libev/S700shadowsocks_server.init && shadowsocks_libev_server_enable=1
+grep -q "enable=1" $DOCUMENT_ROOT/apps/shadowsocks-libev/S701shadowsocks_local.init && shadowsocks_libev_local_enable=1
+grep -q "enable=1" $DOCUMENT_ROOT/apps/shadowsocks-libev/S702shadowsocks_redir.init && shadowsocks_libev_redir_enable=1
+
+do_raw_extra()
+{
+echo "raw_extra do nothing"
+}
+do_mangle_extra()
+{
+echo "mangle_extra do nothing"
+}
+do_filter_zone_wan_forward()
+{
+echo "filter_zone_wan_forward do nothing"
+}
+do_filter_zone_wan_input()
+{
+# echo "filter_zone_wan_input do nothing"
+shadowsocks_server_str=`cat /usr/local/shadowsocks-libev/etc/server.json`
+shadowsocks_local_str=`cat /usr/local/shadowsocks-libev/etc/local.json`
+if
+[ $shadowsocks_libev_server_enable -eq 1 ]
+then
+server_port=`echo "$shadowsocks_server_str" | jq -r '.["server_port"]'`
+echo "$shadowsocks_libev_str" | jq -r '.["shadowsocks_server"]["wan_zone"]' | grep -qE "[ ]*${wan_zone}[ ]*" && iptables -t filter -A input_${wan_zone}_rule -p tcp -m tcp --dport $server_port -m comment --comment "Allow-ss-server" -j ACCEPT
+fi
+if
+[ $shadowsocks_libev_local_enable -eq 1 ]
+then
+local_port=`echo "$shadowsocks_local_str" | jq -r '.["local_port"]'`
+echo "$shadowsocks_libev_str" | jq -r '.["shadowsocks_local"]["wan_zone"]' | grep -qE "[ ]*${wan_zone}[ ]*" && iptables -t filter -A input_${wan_zone}_rule -p tcp -m tcp --dport $local_port -m comment --comment "Allow-ss-local" -j ACCEPT
+fi
+}
+
+do_filter_zone_wan_output()
+{
+echo "filter_zone_wan_output do nothing"
+}
+
+do_filter_zone_lan_forward()
+{
+echo "filter_zone_lan_forward do nothing"
+}
+do_filter_zone_lan_input()
+{
+echo "filter_zone_lan_input do nothing"
+}
+
+do_filter_zone_lan_output()
+{
+echo "filter_zone_lan_output do nothing"
+}
+
+do_nat_zone_wan_zone_postrouting()
+{
+# echo "nat_zone_wan_zone_postrouting do nothing"
+if
+[ $shadowsocks_libev_redir_enable -eq 1 ]
+then
+# shadowsocks_libev_redir_dest
+shadowsocks_redir_str=`cat /usr/local/shadowsocks-libev/etc/redir.json`
+iptables -t nat -N SHADOWSOCKS
+dest_server=`echo "$shadowsocks_redir_str" | jq -r '.["server"]'`
+local_port=`echo "$shadowsocks_redir_str" | jq -r '.["local_port"]'`
+iptables -t nat -A SHADOWSOCKS -d $dest_server -j RETURN
+
+for ip in `cat $DOCUMENT_ROOT/apps/shadowsocks-libev/transparent_proxy_dest.conf | grep -Po '[0-9]*\.[0-9]*\.[0-9]*\.[0-9]*(/[0-9]*)*'`
+do
+iptables -t nat -A SHADOWSOCKS -d ${ip} -j RETURN
+done
+iptables -t nat -A SHADOWSOCKS -p tcp -j REDIRECT --to-ports $local_port
+fi
+# shadowsocks_libev_redir_dest
+
+}
+
+do_nat_zone_lan_zone_postrouting()
+{
+# echo "nat_zone_lan_zone_postrouting do nothing"
+if
+[ $shadowsocks_libev_redir_enable -eq 1 ]
+then
+# shadowsocks_libev_redir_dest
+for lan_zone_redir in `echo "$shadowsocks_libev_str" | jq -r '.["shadowsocks_redir"]["lan_zone"]'` 
+do
+[ "$lan_zone_redir" == "${lan_zone}" ] && iptables -t nat -A zone_${lan_zone}_prerouting -p tcp -j SHADOWSOCKS
+done
+# shadowsocks_libev_redir_dest
+fi
+}

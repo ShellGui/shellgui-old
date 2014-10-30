@@ -1,5 +1,78 @@
 #!/bin/sh
 # Copyright (C) 2006-2014 EK
+download()
+{
+check_download_success()
+{
+if
+[ "$file_md5sum" = "indefinite" ]
+then
+[ -f "$save_dest" ]
+else
+[ -f "$save_dest" ] && [ "$(md5sum $save_dest | awk {'print $1'})" = "$file_md5sum" ]
+fi
+}
+# download_json='{
+# "file_name":"aria2-1.17.1.tar.bz2",
+# "downloader":"aria2 curl wget",
+# "save_dest":"/tmp/aria2-1.17.1.tar.bz2",
+# "useragent":"Mozilla/4.0 (compatible; MSIE 6.1; Windows XP)",
+# "timeout":20,
+# "md5sum":"86229ef8d289893934cb3af25c8fddf6",
+	# "download_urls":{
+	# "url_1":"http://iweb.dl.sourceforge.net/project/aria2/stable/aria2-1.17.1/aria2-1.17.1.tar.bz2",
+	# "url_2":"http://x.vm0.ru/wl500g-repo/sources-mirror/aria2-1.17.1.tar.bz2"
+	# }
+# }'
+
+file_name=`echo $download_json | jq -r '.["file_name"]'`
+timeout=`echo $download_json | jq -r '.["timeout"]'`
+file_md5sum=`echo $download_json | jq -r '.["md5sum"]'`
+save_dest=`echo $download_json | jq -r '.["save_dest"]'`
+save_dest=$(echo $save_dest | grep -q '$' && eval echo $save_dest || echo $save_dest)
+downloader=`echo $download_json | jq -r '.["downloader"]'`
+useragent=`echo $download_json | jq -r '.["useragent"]'`
+# echo $file_name $md5sum $timeout $downloader $useragent
+
+for downloader_a in $downloader
+do
+check_download_success
+if
+[ $? -ne 0 ]
+then
+	check_download_success || [ "${downloader_a}" != "aria2" ] || for url in `echo "$download_json" | jq -r '.["download_urls"][]'`
+	do
+	rm -f $save_dest
+	aria2c --user-agent="$useragent" --timeout=$timeout $(echo "$download_json" | jq -r '.["download_urls"][]' | tr '\n' ' ') --dir=`dirname $save_dest` -o `basename $save_dest` 2>&1
+	check_download_success && break
+	done
+	check_download_success && break
+	check_download_success || [ "${downloader_a}" != "curl" ] || for url in `echo "$download_json" | jq -r '.["download_urls"][]'`
+	do
+	rm -f $save_dest
+	# curl -k -A \""$useragent"\" --speed-limit 2 --speed-time $timeout -L "${url}" -o $save_dest
+	
+. $DOCUMENT_ROOT/apps/curl/curl_lib.sh
+curl_load no_max_time=1
+
+curl $curl_args $(echo "$curl_args" | grep -q "\-k" || echo "-k") -A "$useragent" $(echo "$curl_args" | grep -q "\-\-speed-limit" || echo '--speed-limit 2') $(echo "$curl_args" | grep -q '\-\-speed-time' || echo "--speed-time $timeout") -L "${url}" -o $save_dest 2>&1
+
+	check_download_success && break
+	done
+	check_download_success && break
+	check_download_success|| [ "${downloader_a}" != "wget" ] || for url in `echo "$download_json" | jq -r '.["download_urls"][]'`
+	do
+	rm -f $save_dest
+	wget --no-check-certificate --user-agent="$useragent" --timeout=$timeout ${url}  -O $save_dest 2>&1
+	check_download_success && break
+	done
+	check_download_success && break
+else
+break
+fi
+done
+
+}
 stop_all_service()
 {
 export DOCUMENT_ROOT=$DOCUMENT_ROOT
@@ -1388,5 +1461,8 @@ fw_stop
 ;;
 stop_all_service)
 stop_all_service
+;;
+download)
+download
 ;;
 esac
