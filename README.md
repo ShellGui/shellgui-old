@@ -1,5 +1,11 @@
 shellgui project
 ========
+A lightweight <b>Linux System Web Control Panel</b> write with <b>Pure Shell CGI</b>.
+
+With an Appstore and Complete firewall management strategy.
+Now it can works with <b>CentOS</b>, <b>Debian</b> and <b>Ubuntu</b>.
+And we will add more operating system support and app support in the coming days.
+
 
 Demo
 ========
