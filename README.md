@@ -3,6 +3,7 @@ shellgui project
 A lightweight <b>Linux System Web Control Panel</b> write with <b>Pure Shell CGI</b>.
 
 With an Appstore and Complete firewall management strategy.
+We will update any ever CLI Program which can runs on linux we can do,to be app in the Appstore.
 Now it can works with <b>CentOS</b>, <b>Debian</b> and <b>Ubuntu</b>.
 And we will add more operating system support and app support in the coming days.
 
@@ -25,6 +26,7 @@ How to use.
 curl -L "https://github.com/ShellGui/shellgui/raw/master/init.sh" -o init.sh
 chmod +x init.sh
 ./init.sh</code></pre>
+You can easily install the Path where ever you like,and when you want to do the uninstalltion,just easily remove the folder and reboot.
 
 Screenshots
 ========
