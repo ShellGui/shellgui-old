@@ -418,6 +418,7 @@ do
 if
 [ $(echo "$netzone_str" | jq -r '.["lan_zone"]["'${lan_zone}'"]["enable"]') -eq 1 ]
 then
+echo 1 > /proc/sys/net/ipv4/ip_forward
 echo "$firewall_extra" | while read firewall_extra_file
 do
 . ${firewall_extra_file}
