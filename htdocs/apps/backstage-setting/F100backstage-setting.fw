@@ -1,46 +1,46 @@
 #!/bin/sh
 do_raw_extra()
 {
-echo "raw_extra do nothing"
+echo "[backstage-setting] raw_extra do nothing"
 }
 do_mangle_extra()
 {
-echo "mangle_extra do nothing"
+echo "[backstage-setting] mangle_extra do nothing"
 }
 do_filter_zone_wan_forward()
 {
-echo "filter_zone_wan_forward do nothing"
+echo "[backstage-setting] filter_zone_wan_forward do nothing"
 }
 do_filter_zone_wan_input()
 {
-echo "filter_zone_wan_input do nothing"
+echo "[backstage-setting] filter_zone_wan_input do nothing"
 }
 
 do_filter_zone_wan_output()
 {
-echo "filter_zone_wan_output do nothing"
+echo "[backstage-setting] filter_zone_wan_output do nothing"
 }
 
 do_filter_zone_lan_forward()
 {
-echo "filter_zone_lan_forward do nothing"
+echo "[backstage-setting] filter_zone_lan_forward do nothing"
 }
 do_filter_zone_lan_input()
 {
-echo "filter_zone_lan_input do nothing"
+echo "[backstage-setting] filter_zone_lan_input do nothing"
 }
 
 do_filter_zone_lan_output()
 {
-echo "filter_zone_lan_output do nothing"
+echo "[backstage-setting] filter_zone_lan_output do nothing"
 }
 
 do_nat_zone_wan_zone_postrouting()
 {
-echo "nat_zone_wan_zone_postrouting do nothing"
+echo "[backstage-setting] nat_zone_wan_zone_postrouting do nothing"
 }
 
 do_nat_zone_lan_zone_postrouting()
 {
-echo "nat_zone_lan_zone_postrouting do nothing"
+echo "[backstage-setting] nat_zone_lan_zone_postrouting do nothing"
 }

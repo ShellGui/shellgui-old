@@ -263,7 +263,6 @@ iptables -t nat -A delegate_postrouting -o ${dev} -j zone_wan_postrouting
 fi
 done
 
-
 iptables -t nat -A delegate_prerouting -m comment --comment "user chain for prerouting" -j prerouting_rule
 for lan_zone in `echo "$base_firewall_str" | jq '.["lan_zone"] | keys' | grep -Po '[\w].*[\w]'`
 do
@@ -282,7 +281,6 @@ dev=`echo "$netzone_str" | jq -r '.["wan_zone"]["'${wan_zone}'"]["dev"]'`
 iptables -t nat -A delegate_prerouting -i ${dev} -j zone_wan_prerouting
 fi
 done
-
 for lan_zone in `echo "$base_firewall_str" | jq '.["lan_zone"] | keys' | grep -Po '[\w].*[\w]'`
 do
 if
@@ -595,3 +593,9 @@ add_default_chains
 add_netzone_chains
 deel_chains
 }
+# make_lan_down
+# make_lan_up
+# clean_iptables
+# add_default_chains
+# add_netzone_chains
+# deel_chains
