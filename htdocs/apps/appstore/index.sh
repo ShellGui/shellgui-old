@@ -42,6 +42,12 @@ done
 
 cat <<EOF
 			<li class="pull-right">
+				<a onclick="show_appstore_action('all','update')" class="bg-success">$_LANG_Update_all</a>
+			</li>
+EOF
+
+cat <<EOF
+			<li class="pull-right">
 				<a onclick="show_appstore_action('all','clean')" class="bg-danger">$_LANG_Clean_update_cache</a>
 			</li>
 		</ul>
@@ -72,19 +78,20 @@ if
 [ -d $DOCUMENT_ROOT/apps/${store_app} ] && [ `echo "$now_version < $new_version" | bc` -eq 1 ]
 then
 cat <<EOF
-				<a onclick="show_appstore_action('${store_app}','update')" class="btn btn-info install-btn">$_LANG_Update</a>
+	<a onclick="show_appstore_action('${store_app}','update')" class="btn btn-info install-btn">$_LANG_Update</a>
 EOF
-	if
-	[ "$now_uninstall" = "ban" ]
-	then
+
+if
+[ "$now_uninstall" = "ban" ]
+then
 cat <<EOF
 	<a class="btn btn-danger install-btn disabled">$_LANG_Uninstall</a>
-EOF	
-	else
+EOF
+else
 cat <<EOF
 	<a onclick="show_appstore_action('${store_app}','uninstall')" class="btn btn-danger install-btn">$_LANG_Uninstall</a>
 EOF
-	fi
+fi
 elif
 [ ! -d $DOCUMENT_ROOT/apps/${store_app} ] 
 then
@@ -286,10 +293,42 @@ echo "del $FORM_dealapp success"
 }
 do_update()
 {
+if
+[ "$FORM_dealapp" = "all" ]
+then
+pkgs_str=`cat $DOCUMENT_ROOT/../tmp/$distribution-$(echo "$sysinfo_data" | jq -r '.["sysinfo"]["hw_model"]').pkgs`
+for app in `echo "$pkgs_str" | jq '.["apps"][] | keys' | grep -Po '[\w].*[\w]'`
+do
+old_version=""
+new_version=""
+old_version=`grep "version" $DOCUMENT_ROOT/apps/${app}/config.conf | grep -Po '[0-9][0-9|\.]*'`
+new_version=`echo "$pkgs_str" | jq -r '.["apps"][]["'"${app}"'"]["version"]' | sed '/^null$/d'`
+	if
+	[ `echo "$old_version < $new_version" | bc` -eq 1 ]
+	then
+	FORM_dealapp="${app}"
+	echo "${app}"
+	do_download_app || (echo "Download fail" && exit 1) || return 1
+
+	for file in `find $DOCUMENT_ROOT/../tmp/app_install_tmp/ -type f`
+	do
+	echo ${file} | grep "\.conf$" | grep -v "^config.conf$" && mv ${file} ${file}.origin
+	echo ${file} | grep "\.json$" && rm -f ${file}
+	cp -R $DOCUMENT_ROOT/../tmp/app_install_tmp/* $DOCUMENT_ROOT/apps/$FORM_dealapp
+	rm -rf $DOCUMENT_ROOT/../tmp/app_install_tmp/
+	curl $curl_args -L "https://data-turbopi.rhcloud.com/test.php?action=installapp&app=$FORM_dealapp" >/dev/null 2>&1 || wget -qO- --no-check-certificate "https://data-turbopi.rhcloud.com/test.php?action=installapp&app=$FORM_dealapp" >/dev/null 2>&1
+	done
+	echo "update $FORM_dealapp success"
+
+	fi
+done
+echo "update $FORM_dealapp success" && exit
+fi
+
 do_download_app || (echo "Download fail" && exit 1) || exit 1
 for file in `find $DOCUMENT_ROOT/../tmp/app_install_tmp/ -type f`
 do
-echo ${file} | grep "\.conf$" && mv ${file} ${file}.origin
+echo ${file} | grep "\.conf$" | [ "${file}" != "config.conf" ] && mv ${file} ${file}.origin
 echo ${file} | grep "\.json$" && rm -f ${file}
 done
 cp -R $DOCUMENT_ROOT/../tmp/app_install_tmp/* $DOCUMENT_ROOT/apps/$FORM_dealapp

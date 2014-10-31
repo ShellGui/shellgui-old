@@ -88,19 +88,21 @@ if
 [ -d $DOCUMENT_ROOT/apps/${store_app} ] && [ `echo "$now_version < $new_version" | bc` -eq 1 ]
 then
 cat <<EOF
-				<a onclick="show_appstore_action('${store_app}','update')" class="btn btn-info install-btn">$_LANG_Update</a>
+	<a onclick="show_appstore_action('${store_app}','update')" class="btn btn-info install-btn">$_LANG_Update</a>
 EOF
-	if
-	[ "$now_uninstall" = "ban" ]
-	then
+
+if
+[ "$now_uninstall" = "ban" ]
+then
 cat <<EOF
 	<a class="btn btn-danger install-btn disabled">$_LANG_Uninstall</a>
-EOF	
-	else
+EOF
+else
 cat <<EOF
 	<a onclick="show_appstore_action('${store_app}','uninstall')" class="btn btn-danger install-btn">$_LANG_Uninstall</a>
 EOF
-	fi
+fi
+
 elif
 [ ! -d $DOCUMENT_ROOT/apps/${store_app} ] 
 then

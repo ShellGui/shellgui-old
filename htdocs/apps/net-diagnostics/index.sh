@@ -50,7 +50,7 @@ cat <<EOF
 <div class="col-md-6">
 <legend>ping test</legend>
 <div class="col-md-6">
-<input type="text" id="ping_host" class="form-control" name="ping_host" placeholder="IP/Domain" value="www.turbopi.com">
+<input type="text" id="ping_host" class="form-control" name="ping_host" placeholder="IP/Domain" value="www.shellgui.com">
 </div>
 <div class="col-md-3">
 <input type="text" id="ping_times" class="form-control" name="ping_times" placeholder="Times" value="1">
@@ -69,7 +69,7 @@ Result /* $_LANG_May_need_to_wait_a_very_long_time */
 <div class="col-md-6">
 <legend>traceroute</legend>
 <div class="col-md-6">
-<input type="text" id="traceroute_host" class="form-control" name="traceroute_host" placeholder="IP/Domain" value="www.turbopi.com">
+<input type="text" id="traceroute_host" class="form-control" name="traceroute_host" placeholder="IP/Domain" value="www.shellgui.com">
 </div>
 <div class="col-md-3">
 <button id="traceroute" type="button" class="btn btn-primary">Go</button>
@@ -84,7 +84,7 @@ Result /* $_LANG_May_need_to_wait_a_very_long_time */
 <div class="col-md-6">
 <legend>nslookup</legend>
 <div class="col-md-6">
-<input type="text" id="nslookup_host" class="form-control" name="nslookup_host" placeholder="Domain" value="www.turbopi.com">
+<input type="text" id="nslookup_host" class="form-control" name="nslookup_host" placeholder="Domain" value="www.shellgui.com">
 </div>
 <div class="col-md-3">
 <button id="nslookup" type="button" class="btn btn-primary">Go</button>
