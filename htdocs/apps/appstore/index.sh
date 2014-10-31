@@ -40,7 +40,7 @@ cat <<EOF
 EOF
 done
 
-cat <<EOF
+[ -f $DOCUMENT_ROOT/../tmp/$distribution-$(echo "$sysinfo_data" | jq -r '.["sysinfo"]["hw_model"]').pkgs ] && cat <<EOF
 			<li class="pull-right">
 				<a onclick="show_appstore_action('all','update')" class="bg-success">$_LANG_Update_all</a>
 			</li>
@@ -278,7 +278,7 @@ do_install()
 {
 do_download_app || (echo "Download fail" && exit 1) || exit 1
 mv $DOCUMENT_ROOT/../tmp/app_install_tmp/ $DOCUMENT_ROOT/apps/$FORM_dealapp
-curl $curl_args -L "https://data-turbopi.rhcloud.com/test.php?action=installapp&app=$FORM_dealapp" >/dev/null 2>&1 || wget -qO- --no-check-certificate "https://data-turbopi.rhcloud.com/test.php?action=installapp&app=$FORM_dealapp" >/dev/null 2>&1
+curl $curl_args -L "https://data-turbopi.rhcloud.com/test.php?action=installapp&app=$FORM_dealapp" -o /dev/null 2>&1 || wget -qO- --no-check-certificate "https://data-turbopi.rhcloud.com/test.php?action=installapp&app=$FORM_dealapp" >/dev/null 2>&1
 echo "install $FORM_dealapp success"
 }
 do_uninstall()
