@@ -108,11 +108,11 @@ function del_ps(ps)
 </script>
 EOF
 
-for ps in `echo "$data_str" | jq '. | keys' | grep -Po '[\w]*'`
+for ps in `echo "$data_str" | jq '. | keys' | grep -Po '[\w]*[\w]'`
 do
 pregress=`echo "$data_str" | jq -r '.["'$ps'"]["pregress"]'`
-tar_app=`echo "$data_str" | jq '.["'$ps'"]["app"]' | grep -Po '[\w]*'`
-status=`echo "$data_str" | jq '.["'$ps'"]["status"]' | grep -Po '[\w]*'`
+tar_app=`echo "$data_str" | jq -r '.["'$ps'"]["app"]'`
+status=`echo "$data_str" | jq -r '.["'$ps'"]["status"]'`
 if
 [ "$status" = "working" ]
 then

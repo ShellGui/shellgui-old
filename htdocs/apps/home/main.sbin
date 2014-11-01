@@ -1,5 +1,27 @@
 #!/bin/sh
 # Copyright (C) 2006-2014 EK
+shellgui_env()
+{
+which jq >/dev/null 2>&1
+if
+[ $? -ne 0 ]
+then
+shellgui_PATH="$PATH:$(readlink -f $0 | sed 's#htdocs/apps/home/main.sbin##')bin"
+cat <<EOF | sed 's#//#/#'
+export PATH=$shellgui_PATH
+EOF
+else
+cat <<EOF | sed 's#//#/#'
+export PATH=$PATH
+EOF
+
+fi
+shellgui_DOCUMENT_ROOT=$(readlink -f $0 | sed 's#apps/home/main.sbin##')
+cat <<EOF | sed 's#//#/#'
+export DOCUMENT_ROOT=$shellgui_DOCUMENT_ROOT
+EOF
+
+}
 download()
 {
 check_download_success()
@@ -1353,6 +1375,7 @@ done
 IFS=$IFS_bak
 fi
 export DOCUMENT_ROOT=$(readlink -f $0 | sed 's#apps/home/main.sbin##')
+which jq >/dev/null 2>&1 || export PATH=$PATH:$(readlink -f $0 | sed 's#htdocs/apps/home/main.sbin##')/bin
 case $1 in
 go_app)
 go_app $*
@@ -1464,5 +1487,8 @@ stop_all_service
 ;;
 download)
 download
+;;
+shellgui_env)
+shellgui_env
 ;;
 esac
