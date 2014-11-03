@@ -1,0 +1,81 @@
+#!/bin/sh
+enable=0
+start()
+{
+[ -z "$DOCUMENT_ROOT" ] && export DOCUMENT_ROOT=`main.sbin where_DOCUMENT_ROOT`
+if
+[ -x /usr/local/sbin/dnsmasq ]
+then
+main.sbin notice option="add" \
+				read="0" \
+				desc="_NOTICE_dnscrypt_proxy_binary_need_install" \
+				detail="_NOTICE_dnscrypt_proxy_binary_need_install" \
+				uniqid="dnscrypt_proxy_binary_need_install" \
+				time="" \
+				ergen="red" \
+				dest="dnsmasq" \
+				dest_type="app" >/dev/null 2>&1
+fi
+if
+[ $enable -eq 1 ]
+then
+mkdir -p /tmp/dnsmasq.d
+mkdir -p /var/dnsmasq/
+cp $DOCUMENT_ROOT/apps/dnsmasq/dnsmasq.d/* /tmp/dnsmasq.d
+cp $DOCUMENT_ROOT/apps/dnsmasq/dnsmasq_base.conf /var/dnsmasq/dnsmasq.conf
+dnsmasq_setting=`cat $DOCUMENT_ROOT/apps/dnsmasq/dnsmasq_setting.conf`
+[ $(echo "$dnsmasq_setting" | jq -r '.["no-resolv"]') -eq 1 ] && echo "no-resolv" >> /var/dnsmasq/dnsmasq.conf
+
+for bogus_nxdomain in `echo "$dnsmasq_setting" | jq -r '.["bogus-nxdomain"] | keys' | grep -Po '[\w].*[\w]'`
+do
+echo "bogus-nxdomain=$bogus_nxdomain" >> /var/dnsmasq/dnsmasq.conf
+done
+for server in `echo "$dnsmasq_setting" | jq -r '.["server"] | keys' | grep -Po '[\w].*[\w]'`
+do
+echo "server=$server" >> /var/dnsmasq/dnsmasq.conf
+done
+rm -f /var/dnsmasq/hosts
+for ip in `echo "$dnsmasq_setting" | jq -r '.["addn-hosts"] | keys' | grep -Po '[\w].*[\w]'`
+do
+echo "${ip} $(echo "$dnsmasq_setting" | jq -r '.["addn-hosts"]["'${ip}'"]')" >> /var/dnsmasq/hosts
+done
+
+netzone_str=`cat $DOCUMENT_ROOT/apps/netzone/netzone.conf`
+
+for lan_zone in `echo "$dnsmasq_setting" | jq '.["interfaces"] | keys' | grep -Po '[\w].*[\w]'`
+do
+[ "${lan_zone}" = "null" ] && continue
+if
+[ $(echo "$dnsmasq_setting" | jq -r '.["interfaces"]["lan"]["enable"]') -eq 1 ]
+then
+start_ip=`echo "$dnsmasq_setting" | jq -r '.["interfaces"]["'${lan_zone}'"]["start_ip"]'`
+end_ip=`echo "$dnsmasq_setting" | jq -r '.["interfaces"]["'${lan_zone}'"]["end_ip"]'`
+expand_time=`echo "$dnsmasq_setting" | jq -r '.["interfaces"]["'${lan_zone}'"]["expand_time"]'`
+ip_prefix=`echo "$netzone_str" | jq -r '.["lan_zone"]["'${lan_zone}'"]["ip"]' | sed 's/\.[0-9]*$//'`
+netmask=`echo "$netzone_str" | jq -r '.["lan_zone"]["'${lan_zone}'"]["netmask"]'`
+echo "dhcp-range=${lan_zone},$ip_prefix.$start_ip,$ip_prefix.$end_ip,$netmask,$expand_time" >> /var/dnsmasq/dnsmasq.conf
+fi
+done
+
+for wan_zone_dev in `echo "$netzone_str" | jq -r '.["wan_zone"][]["dev"]'`
+do
+[ "${wan_zone}" = "null" ] && continue
+echo "no-dhcp-interface=$wan_zone_dev" >> /var/dnsmasq/dnsmasq.conf
+done
+
+for pid in `netstat -tulnp | grep ":53[ ]" | awk {'print $NF'} | awk -F "/" {'print $1'}`
+do
+kill -9 ${pid}
+done
+
+ps aux | grep -v grep | grep "dnsmasq" | grep "^nobody" || $DOCUMENT_ROOT/../bin/busybox start-stop-daemon -S -b -x dnsmasq -- -C /var/dnsmasq/dnsmasq.conf -k
+else
+killall dnsmasq || pkill dnsmasq
+fi
+exit
+}
+stop()
+{
+killall dnsmasq || pkill dnsmasq
+}
+[ -z "$1" ] && start || $1

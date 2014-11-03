@@ -1,0 +1,68 @@
+#!/bin/sh
+enable=1
+[ -z "$DOCUMENT_ROOT" ] && export DOCUMENT_ROOT=`main.sbin where_DOCUMENT_ROOT`
+
+start()
+{
+while true
+do
+xl2tpd_pid=`ps aux | grep "xl2tpd$" | grep -v grep | grep "^root" | sed -n 1p | awk {'print $2'}`
+if
+[ -n "$xl2tpd_pid" ]
+then
+kill -9 $xl2tpd_pid
+else
+break
+fi
+done
+[ $enable -ne 1 ] && exit
+pptp_xl2tp_str=`cat $DOCUMENT_ROOT/apps/pptp-l2tp-server/pptp-l2tp-server.json`
+
+local_ip=`echo "$pptp_xl2tp_str" | jq -r '.["l2tp"]["local_ip"]'`
+ip_range=`echo "$pptp_xl2tp_str" | jq -r '.["l2tp"]["ip_range"]'`
+ms_dnss=`echo "$pptp_xl2tp_str" | jq -r '.["l2tp"]["ms_dns"]'`
+sed -i "s/ip range[ ]*=.*/ip range = $ip_range/" /etc/xl2tpd/xl2tpd.conf
+sed -i "s/local ip[ ]*=.*/local ip = $local_ip/" /etc/xl2tpd/xl2tpd.conf
+sed -i '/ms-dns/d' /etc/ppp/options.xl2tpd
+
+for ms_dns in $ms_dnss
+do
+echo "ms-dns ${ms_dns}" >> /etc/ppp/options.xl2tpd
+done
+
+sed -i '/[ ]*l2tp[ ]*/d' /etc/ppp/chap-secrets
+for user in `echo "$pptp_xl2tp_str" | jq '.["l2tp_users"] | keys' | grep -Po '[\w][\w]*'`
+do
+echo "${user} l2tp $(echo "$pptp_xl2tp_str" | jq -r '.["l2tp_users"]["'"${user}"'"]') *" >>/etc/ppp/chap-secrets
+done
+/usr/local/sbin/xl2tpd
+}
+
+stop()
+{
+killall xl2tpd || pkill xl2tpd
+}
+[ -z "$1" ] && start || $1
+
+
+
+# last | grep still | grep ppp
+# ipsec auto --up L2TP-PSK-NAT
+
+# I have enabled log options in /etc/pp/options.xl2tpd
+# logfd 2
+# logfile /var/log/l2tpd.log
+
+# ipsec的认证日志默认输出到/var/log/auth.log，如果建立vpn连接后看到IPsec SA established transport mode即表示认证成功。
+# xl2tpd的日志默认输出到/var/log/syslog，可以在/etc/ppp/xl2tpd-options配置里添加debug（重启xl2tpd)来查看更详细的日志
+
+# 可以登录但无法访问网站或无法访问部分网站
+# 通常是mtu设置的问题，执行如下命令
+# iptables -t nat -A POSTROUTING -j MASQUERADE
+# iptables -I FORWARD -p tcp --syn -i ppp+ -j TCPMSS --set-mss 1356
+
+
+# openssl rand -hex 30
+
+# -A FORWARD -i ppp+ -p all -m state --state NEW,ESTABLISHED,RELATED -j ACCEPT
+

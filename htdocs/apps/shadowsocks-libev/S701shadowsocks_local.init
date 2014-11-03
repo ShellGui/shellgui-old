@@ -1,0 +1,33 @@
+#!/bin/sh
+enable=0
+start()
+{
+[ -z "$DOCUMENT_ROOT" ] && export DOCUMENT_ROOT=`main.sbin where_DOCUMENT_ROOT`
+if
+[ -x /usr/local/shadowsocks-libev/bin/ss-local ]
+then
+main.sbin notice option="add" \
+				read="0" \
+				desc="_NOTICE_Shadowsocks_libev_binary_need_install" \
+				detail="_NOTICE_Shadowsocks_libev_binary_need_install" \
+				uniqid="Shadowsocks_libev_binary_need_install" \
+				time="" \
+				ergen="red" \
+				dest="shadowsocks-libev" \
+				dest_type="app" >/dev/null 2>&1
+fi
+mkdir -p /var/run/shadowsocks && chown shadowsocks /var/run/shadowsocks
+if
+[ $enable -eq 1 ]
+then
+ps aux | grep -q "ss-local -c /usr/local/shadowsocks-libev/etc/local.json -a shadowsocks " | grep -v grep || /usr/local/shadowsocks-libev/bin/ss-local -c /usr/local/shadowsocks-libev/etc/local.json -a shadowsocks -u -f /var/run/shadowsocks/shadowsocks-local.pid
+else
+killall ss-local || pkill ss-local
+fi
+exit
+}
+stop()
+{
+killall ss-local || pkill ss-local
+}
+[ -z "$1" ] && start || $1
