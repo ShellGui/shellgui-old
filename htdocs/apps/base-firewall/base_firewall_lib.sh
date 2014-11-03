@@ -292,6 +292,14 @@ do
 do_nat_zone_lan_zone_postrouting
 done
 iptables -t nat -A zone_${lan_zone}_postrouting -m comment --comment "user chain for postrouting" -j postrouting_${lan_zone}_rule
+fi
+done
+
+for lan_zone in `echo "$base_firewall_str" | jq '.["lan_zone"] | keys' | grep -Po '[\w].*[\w]'`
+do
+if
+[ $(echo "$netzone_str" | jq -r '.["lan_zone"]["'${lan_zone}'"]["enable"]') -eq 1 ]
+then
 iptables -t nat -A zone_${lan_zone}_prerouting -m comment --comment "user chain for prerouting" -j prerouting_${lan_zone}_rule
 fi
 done
@@ -418,7 +426,6 @@ do
 if
 [ $(echo "$netzone_str" | jq -r '.["lan_zone"]["'${lan_zone}'"]["enable"]') -eq 1 ]
 then
-echo 1 > /proc/sys/net/ipv4/ip_forward
 echo "$firewall_extra" | while read firewall_extra_file
 do
 . ${firewall_extra_file}
