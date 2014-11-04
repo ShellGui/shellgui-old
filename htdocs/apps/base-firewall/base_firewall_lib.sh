@@ -213,6 +213,7 @@ do
 if
 [ $(echo "$netzone_str" | jq -r '.["lan_zone"]["'${lan_zone}'"]["enable"]') -eq 1 ]
 then
+echo '1' > /proc/sys/net/ipv4/ip_forward
 # nat
 iptables -t nat -N postrouting_${lan_zone}_rule
 iptables -t nat -N prerouting_${lan_zone}_rule
