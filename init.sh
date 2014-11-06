@@ -323,6 +323,8 @@ sed -i '/main.sbin/d' /etc/rc.local
 sed -i "/^[ ]*exit[ ]*0/i\[ -x $HOME_DIR/bin/main.sbin ] && $HOME_DIR/bin/main.sbin init" /etc/rc.local
 
 cat /etc/rc.local | grep "main.sbin" || echo "[ -x $HOME_DIR/bin/main.sbin ] && $HOME_DIR/bin/main.sbin init" >> /etc/rc.local
+[ -f /etc/rc.d/rc.local ] && mv /etc/rc.d/rc.local /etc/rc.d/rc.local.bak && chmod -x /etc/rc.d/rc.local.bak && ln -s /etc/rc.local /etc/rc.d/rc.local
+chmod +x /etc/rc.local
 
 killall lighttpd || pkill lighttpd
 killall busybox || pkill busybox
