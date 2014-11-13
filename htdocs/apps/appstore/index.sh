@@ -312,7 +312,7 @@ new_version=`echo "$pkgs_str" | jq -r '.["apps"][]["'"${app}"'"]["version"]' | s
 
 	for file in `find $DOCUMENT_ROOT/../tmp/app_install_tmp/ -type f`
 	do
-	echo ${file} | grep "\.conf$" | grep -v "^config.conf$" && mv ${file} ${file}.origin
+	echo ${file} | grep "\.conf$" && [ "${file}" != "config.conf" ] && mv ${file} ${file}.origin
 	echo ${file} | grep "\.json$" && rm -f ${file}
 	cp -R $DOCUMENT_ROOT/../tmp/app_install_tmp/* $DOCUMENT_ROOT/apps/$FORM_dealapp
 	rm -rf $DOCUMENT_ROOT/../tmp/app_install_tmp/
@@ -328,8 +328,11 @@ fi
 do_download_app || (echo "Download fail" && exit 1) || exit 1
 for file in `find $DOCUMENT_ROOT/../tmp/app_install_tmp/ -type f`
 do
-echo ${file} | grep "\.conf$" | [ "${file}" != "config.conf" ] && mv ${file} ${file}.origin
+echo ${file} | grep "\.conf$" && [ "${file}" != "config.conf" ] && mv ${file} ${file}.origin
 echo ${file} | grep "\.json$" && rm -f ${file}
+cp -R $DOCUMENT_ROOT/../tmp/app_install_tmp/* $DOCUMENT_ROOT/apps/$FORM_dealapp
+rm -rf $DOCUMENT_ROOT/../tmp/app_install_tmp/
+curl $curl_args -L "https://data-turbopi.rhcloud.com/test.php?action=installapp&app=$FORM_dealapp" >/dev/null 2>&1 || wget -qO- --no-check-certificate "https://data-turbopi.rhcloud.com/test.php?action=installapp&app=$FORM_dealapp" >/dev/null 2>&1
 done
 cp -R $DOCUMENT_ROOT/../tmp/app_install_tmp/* $DOCUMENT_ROOT/apps/$FORM_dealapp
 rm -rf $DOCUMENT_ROOT/../tmp/app_install_tmp/
