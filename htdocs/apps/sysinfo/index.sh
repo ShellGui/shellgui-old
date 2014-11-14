@@ -182,7 +182,7 @@ $_LANG_Time_Zone
 <select name="zonename" class="form-control">
 EOF
 tz_now=`echo "$sysinfo_data" | jq -r '.["sysinfo"]["tz_now"]'`
-for tz in $(for i in `find /usr/share/zoneinfo/ -type d -maxdepth 1 | grep -v "/$"`; do find ${i} -type f; done | grep -vE "right|Etc|posix" | sed 's#/usr/share/zoneinfo/##g' | sort -n)
+for tz in $(for i in `find /usr/share/zoneinfo/ -type d -maxdepth 1 | grep -v "/$"`; do find ${i} \( -type f -o -type l \); done | grep -vE "right|Etc|posix" | sed 's#/usr/share/zoneinfo/##g' | sort -n)
 do
 echo "<option value=\"${tz}\" "`[ "$tz_now" = "${tz}" ] && echo selected`">${tz}</option>"
 done

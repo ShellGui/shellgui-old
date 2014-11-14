@@ -1,0 +1,908 @@
+{
+  "info": {
+    "distribution": "debian-6.x",
+    "platform": "x86_64",
+    "url_prefix": "https://raw.githubusercontent.com/ShellGui/shellgui-appstore/master/"
+  },
+  "apps": {
+    "Firewall": {
+      "netzone": {
+        "version": "0.1",
+        "size": "64K",
+        "files": {
+          "netzone.conf": "0188e0d10e743efee19c40eaf9f30c41",
+          "icon.png": "a8ab65bedd36d8f78ac6c09d6368b039",
+          "config.conf": "ad5cc4db503ced34c66eab009c088762",
+          "netzone_lib.sh": "c005f853f3c4e1e604c1de380fa424eb",
+          "index.sh": "58da2cbe3b9c31bba6d9eb23746f4ff8",
+          "i18n/zh-cn/i18n.conf": "a8746aea6e1538473391a5a6ea2c505a",
+          "i18n/en/i18n.conf": "777b1154482b9a57bbf4adb59ad96e92"
+        },
+        "i18n": {
+          "zh-cn": {
+            "name": "网络区管理",
+            "desc": "测试描述",
+            "detail": "测试详尽",
+            "type": "防火墙"
+          },
+          "en": {
+            "name": "Net Zone",
+            "desc": "test desc",
+            "detail": "test detail",
+            "type": "Firewall"
+          }
+        }
+      },
+      "base-firewall": {
+        "version": "0.1",
+        "size": "76K",
+        "files": {
+          "base_firewall_lib.sh": "0d810b04b3ce25b98f2d291da562bf22",
+          "base-firewall.conf": "96ff03facce6b6911e210faf772cf7d8",
+          "icon.png": "cfd82c8bea82f630c288b3b752a960a1",
+          "config.conf": "ad5cc4db503ced34c66eab009c088762",
+          "index.sh": "3dcf76103239bc5da448abe17bfb96c6",
+          "i18n/zh-cn/i18n.conf": "df8cda884073d085bf5d50a7daf8ad48",
+          "i18n/en/i18n.conf": "f3cc3202a260ff8926f74e36819de50b"
+        },
+        "i18n": {
+          "zh-cn": {
+            "name": "基础防火墙",
+            "desc": "测试描述",
+            "detail": "测试详尽",
+            "type": "防火墙"
+          },
+          "en": {
+            "name": "Base Firewall",
+            "desc": "test desc",
+            "detail": "test detail",
+            "type": "Firewall"
+          }
+        }
+      },
+      "test1": {
+        "version": "0.1",
+        "size": "36K",
+        "files": {
+          "icon.png": "288902224144786270f2ff220661d723",
+          "config.conf": "fa313505e9637195a2c531acdca61fa6",
+          "index.sh": "3678bb60720f1a769595ab44ea26f239",
+          "i18n/zh-cn/i18n.conf": "390c740a431bbc88d2643968ca213532",
+          "i18n/en/i18n.conf": "f3346b6e448fef47f6b5cf4d6c5a1fc0"
+        },
+        "i18n": {
+          "zh-cn": {
+            "name": "测试1",
+            "desc": "测试描述",
+            "detail": "测试详尽",
+            "type": "防火墙"
+          },
+          "en": {
+            "name": "test1",
+            "desc": "test desc",
+            "detail": "test detail",
+            "type": "Firewall"
+          }
+        }
+      }
+    },
+    "System": {
+      "sysinfo": {
+        "version": "0.1",
+        "size": "88K",
+        "files": {
+          "S100sysinfo.init": "462a352b2869c6c7fb22d33ea041c505",
+          "centos.png": "cf1d3506f344330efc491a03cd49d41b",
+          "sysinfo.conf": "ba0516a7b93c5f940cfdc75b03b0f083",
+          "icon.png": "d0754f1cc8ac51b59db018980b1a26c0",
+          "config.conf": "9c2edbbba8f9db59bf91c7a7fd1f4459",
+          "debian.png": "b07bcc6d3717a93694911fc11e846e9f",
+          "unknow.png": "d0754f1cc8ac51b59db018980b1a26c0",
+          "sysinfo_lib.sh": "c64aa785127e6ba8b04d129e25f97be1",
+          "index.sh": "c83a5a370d8529a5d90dbadb038806a8",
+          "ubuntu.png": "3d5b45d8fa97605d13d81f142c08351b",
+          "i18n/zh-cn/i18n.conf": "f65810697cc9bd8f29c188be4d09e4dc",
+          "i18n/en/i18n.conf": "8e889b18dfbf6d837a90d2d49b9bf882"
+        },
+        "i18n": {
+          "zh-cn": {
+            "name": "系统信息",
+            "desc": "系统信息显示和管理",
+            "detail": "系统信息高级显示和管理",
+            "type": "系统"
+          },
+          "en": {
+            "name": "Sysinfo",
+            "desc": "System info",
+            "detail": "System info shows and setting",
+            "type": "System"
+          }
+        }
+      },
+      "appstore": {
+        "version": "0.11",
+        "size": "60K",
+        "files": {
+          "icon.png": "a543974cd3c64268e743a38ef4ea7675",
+          "config.conf": "297120d2eef8d8d242a3413623999b5f",
+          "index.sh": "e0e8c5d6c241c3da983d1e9c88c57620",
+          "app_types.sh": "f1f7c85c0ba219025e8c6c097ceac743",
+          "i18n/zh-cn/i18n.conf": "1a9d6d47a3780ed89fc767bb985c0f97",
+          "i18n/en/i18n.conf": "6641b55ab37f93bb7d41147e25c6453a"
+        },
+        "i18n": {
+          "zh-cn": {
+            "name": "应用市场",
+            "desc": "应用市场,下载和更新你的应用.",
+            "detail": "Turbopi 应用市场,下载和更新你的应用.让你的服务器更加简单地管理.",
+            "type": "系统"
+          },
+          "en": {
+            "name": "Appstore",
+            "desc": "App Store,Download and update your apps.",
+            "detail": "Turbopi App Store,Download and update your apps.Make your server control easy.",
+            "type": "System"
+          }
+        }
+      },
+      "backstage-setting": {
+        "version": "0.1",
+        "size": "52K",
+        "files": {
+          "icon.png": "bf161c505561a1b391d2b346d0d02fa0",
+          "config.conf": "9c2edbbba8f9db59bf91c7a7fd1f4459",
+          "F100backstage-setting.fw": "59ed41675499d3f558f0ea1b5a7d7b25",
+          "index.sh": "cf839fd444f806f9492d5882a8bbbfcb",
+          "i18n/zh-cn/i18n.conf": "fddc2512dd39af426b11279fbd2864d2",
+          "i18n/en/i18n.conf": "80ab9127389f7e5b1092ddd91634e192"
+        },
+        "i18n": {
+          "zh-cn": {
+            "name": "后台设置",
+            "desc": "系统后台基本设置",
+            "detail": "系统后台基本设置，包括安全设置",
+            "type": "系统"
+          },
+          "en": {
+            "name": "Backstage Setting",
+            "desc": "Setting for backstage.",
+            "detail": "Base setting for backstage,include security setting.",
+            "type": "System"
+          }
+        }
+      },
+      "home": {
+        "version": "0.1",
+        "size": "152K",
+        "files": {
+          "base.httpd_others": "4d53adf254912564927e7aea3d0f9313",
+          "home.conf": "6d3397a4009a75e6afe3747b541a7ffe",
+          "icon.png": "4a5b40cc1f5ead6a8f44b1939e3ba3d5",
+          "config.conf": "00d884be97a2b09099203f6e065db0e8",
+          "imgs/eth-down.png": "a7374527a3504c4d055ae3944c7a4719",
+          "imgs/eth-10.png": "ba060586c2c3022403a50a4ceac8f3c5",
+          "imgs/mem.png": "801fa44fe63c4d29f0dde72e81190a6d",
+          "imgs/eth-1000.png": "f59ae3bb034d1f3b67fae66d082d7cf3",
+          "imgs/eth-100.png": "18c5485b2434c26c4a5bfe27b8b2648e",
+          "imgs/cpu.png": "fda0ffcabb0e8f7d5eec41824ea335bd",
+          "imgs/wifi.png": "33b595e5e146810409e6bcc0adc75e3d",
+          "base.httpd_modules": "8777f0e5c65513456a3d4d603764a756",
+          "brandwidth.tpl.sh": "9338dc3229454b14626e3a7b43ee1a3d",
+          "main.sbin": "b6cbbb8cd96097598b36885bbbb2a704",
+          "index.sh": "b39866a492e221126d2ab2babff220da",
+          "i18n/zh-cn/i18n.conf": "bde5ec1083dc11ea59bb3f25e1bb42a9",
+          "i18n/en/i18n.conf": "3fff85ffa97aef8e128e8db2043435aa",
+          "base.httpd_htpass": "c7c01ae32a83b014f586aeb61415b9f0",
+          "distributions_lib.sh": "b076892df1b7642919c1f155c32b07ba",
+          "base.httpd_cgi": "6e0e8fce06b2a6f2ef837fd26969037b"
+        },
+        "i18n": {
+          "zh-cn": {
+            "name": "首页",
+            "desc": "后台管理首页",
+            "detail": "用于索引、显示所有app和检索信息",
+            "type": "系统"
+          },
+          "en": {
+            "name": "Home",
+            "desc": "Index of back-state management",
+            "detail": "The functions of system include the display of apps and classification information",
+            "type": "System"
+          }
+        }
+      },
+      "ssl-gen": {
+        "version": "0.11",
+        "size": "56K",
+        "files": {
+          "icon.png": "9e0b8a30c00913db7a4a411e0404aac2",
+          "config.conf": "752c0eebd87f649f1711ff518ecd68b3",
+          "index.sh": "74e56995396b3812ed6e776a612edc67",
+          "i18n/zh-cn/i18n.conf": "d652a1a4cf316b29e599d47807f57196",
+          "i18n/en/i18n.conf": "739e443738ba7eec6e9f226ccc06300d"
+        },
+        "i18n": {
+          "zh-cn": {
+            "name": "证书管理",
+            "desc": "SSL 证书生成",
+            "detail": "服务器 SSL 证书生成",
+            "type": "系统"
+          },
+          "en": {
+            "name": "SSL Gen",
+            "desc": "SSL certificate generation",
+            "detail": "Server SSL certificate generation",
+            "type": "System"
+          }
+        }
+      },
+      "login": {
+        "version": "0.1",
+        "size": "40K",
+        "files": {
+          "icon.png": "76778fde9cf9f96ce71b09ee579f381c",
+          "config.conf": "00d884be97a2b09099203f6e065db0e8",
+          "index.sh": "41882a69abad5956131dd2ba6187ab28",
+          "i18n/zh-cn/i18n.conf": "ce35fb259c6e2da0082bbf47628ae517",
+          "i18n/en/i18n.conf": "d8d97e5a0f808d4ba7b522e4522f1113"
+        },
+        "i18n": {
+          "zh-cn": {
+            "name": "登录",
+            "desc": "登陆管理",
+            "detail": "后台登陆管理",
+            "type": "系统"
+          },
+          "en": {
+            "name": "Login",
+            "desc": "Login controller",
+            "detail": "Back-state management login controller",
+            "type": "System"
+          }
+        }
+      },
+      "notice": {
+        "version": "0.1",
+        "size": "56K",
+        "files": {
+          "notice_lib.sh": "938d4360d256a6b61d2fed374f32300b",
+          "icon.png": "1ec30a88288d28ee416c145759793484",
+          "config.conf": "9c2edbbba8f9db59bf91c7a7fd1f4459",
+          "index.sh": "ee1002e907561bc276361c48c318759f",
+          "i18n/zh-cn/i18n.conf": "1fbf3edf2bb25c8f58c489aecb75b245",
+          "i18n/en/i18n.conf": "b540b78275aa552df3cc09903a0f8288"
+        },
+        "i18n": {
+          "zh-cn": {
+            "name": "消息",
+            "desc": "后台通知消息",
+            "detail": "系统后台通知消息，包括各种通知",
+            "type": "系统"
+          },
+          "en": {
+            "name": "Notice",
+            "desc": "Notice for backstage.",
+            "detail": "Notice for backstage,include everything.",
+            "type": "System"
+          }
+        }
+      },
+      "scheduled": {
+        "version": "0.1",
+        "size": "56K",
+        "files": {
+          "crontabs/root": "8e5df86bfcfcb38a40f74762d2e1aee8",
+          "icon.png": "f7e831189adaa87c6e67e8ecd04edbb4",
+          "config.conf": "9c2edbbba8f9db59bf91c7a7fd1f4459",
+          "index.sh": "f6bc4c88375801e17e1e49477f7910d1",
+          "i18n/zh-cn/i18n.conf": "5d8b7c97076c91841dfe28bf4bf04fd7",
+          "i18n/en/i18n.conf": "9599487b4e29603ea5870ccc6bbef615",
+          "S300scheduled.init": "0476458201b6e0207e8d7a17842bbcdf"
+        },
+        "i18n": {
+          "zh-cn": {
+            "name": "计划任务",
+            "desc": "测试描述",
+            "detail": "测试详尽",
+            "type": "系统"
+          },
+          "en": {
+            "name": "Scheduled",
+            "desc": "test desc",
+            "detail": "test detail",
+            "type": "System"
+          }
+        }
+      },
+      "sysusers": {
+        "version": "0.1",
+        "size": "104K",
+        "files": {
+          "icon.png": "c607077ad8744ae375fdeeb8b1c6b711",
+          "config.conf": "9c2edbbba8f9db59bf91c7a7fd1f4459",
+          "index.sh": "5029bd1d3344bc84b89e21860f662ddb",
+          "i18n/zh-cn/i18n.conf": "faa9d1ec26816966b808856236a64637",
+          "i18n/en/i18n.conf": "5a372fd00bdc19b1ace5f282d0e653b9",
+          "group.sh": "12b52bd9bb95c6711087e956fc40507c",
+          "user.sh": "6bae7c3b420af73b5432c0356531498d"
+        },
+        "i18n": {
+          "zh-cn": {
+            "name": "系统用户",
+            "desc": "系统用户管理",
+            "detail": "系统用户高级管理",
+            "type": "系统"
+          },
+          "en": {
+            "name": "System Users",
+            "desc": "System users administration",
+            "detail": "System users administration advence",
+            "type": "System"
+          }
+        }
+      }
+    },
+    "Application": {
+      "php": {
+        "version": "0.1",
+        "size": "72K",
+        "files": {
+          "php_lib.sh": "e613905ee49105e6f9d1a785d5077909",
+          "icon.png": "89a5ea28e8c0fc32b701f0716a71a4b4",
+          "config.conf": "2c8b24050e76758f403875c16f0efb01",
+          "index.sh": "d2b2b0031e89441c8b50d39718280dbe",
+          "i18n/zh-cn/i18n.conf": "796776b6a0a52b079672e6c225ae0947",
+          "i18n/en/i18n.conf": "485d47804d53373076adf358373b632b"
+        },
+        "i18n": {
+          "zh-cn": {
+            "name": "PHP",
+            "desc": "PHP 服务",
+            "detail": "PHP 服务程序",
+            "type": "应用程序"
+          },
+          "en": {
+            "name": "PHP",
+            "desc": "PHP server",
+            "detail": "PHP server program",
+            "type": "Application"
+          }
+        }
+      },
+      "hosts-edit": {
+        "version": "0.1",
+        "size": "36K",
+        "files": {
+          "icon.png": "81244fa840697490cf4100dd8afdb152",
+          "config.conf": "4f586c1cc97c8b31f1301dac76cd0844",
+          "index.sh": "453e5a09964595a38468e2a7c2eb2d2e",
+          "i18n/zh-cn/i18n.conf": "75e469a1f30625e587d68bc584d55ec7",
+          "i18n/en/i18n.conf": "d5d5ecd7bc5ee2061a92691a44a6efe5"
+        },
+        "i18n": {
+          "zh-cn": {
+            "name": "host文件编辑",
+            "desc": "编辑hosts文件",
+            "detail": "编辑服务器hosts文件",
+            "type": "应用程序"
+          },
+          "en": {
+            "name": "hosts file edit",
+            "desc": "Edit hosts file",
+            "detail": "Edit the server hosts file",
+            "type": "Application"
+          }
+        }
+      },
+      "imagemagick": {
+        "version": "0.1",
+        "size": "48K",
+        "files": {
+          "icon.png": "65b28cf0f1111f7c5a014eefe8eda2da",
+          "config.conf": "2c8b24050e76758f403875c16f0efb01",
+          "imagemagick_lib.sh": "b1b059dca4bbdb122a1b5e43831c0b2e",
+          "index.sh": "7810569b8b901915039816e89b8d096b",
+          "i18n/zh-cn/i18n.conf": "1a0c539a6ecd453a15fa42e7195ccfeb",
+          "i18n/en/i18n.conf": "e7789d218c59cb65bc588df51ba12345"
+        },
+        "i18n": {
+          "zh-cn": {
+            "name": "ImageMagick",
+            "desc": "测试描述",
+            "detail": "测试详尽",
+            "type": "应用程序"
+          },
+          "en": {
+            "name": "ImageMagick",
+            "desc": "test desc",
+            "detail": "test detail",
+            "type": "Application"
+          }
+        }
+      },
+      "php-ext": {
+        "version": "0.1",
+        "size": "72K",
+        "files": {
+          "php_ext_lib.sh": "135143020f6f981e4e759713590c799d",
+          "icon.png": "156fe1198fb639c30f9674c972179156",
+          "config.conf": "2c8b24050e76758f403875c16f0efb01",
+          "xcache.conf": "4141b5178acbb65838ba875684534943",
+          "index.sh": "ae2e21ff5d2711e671d1a8f70cdc52a9",
+          "i18n/zh-cn/i18n.conf": "d9556c6264a3a9ece080f8b34cb8c95e",
+          "i18n/en/i18n.conf": "8ac569acb49bc33275fa69c6fc9a6c4c",
+          "opcache.conf": "a47db66014ee1148a0cb0465870c0b25"
+        },
+        "i18n": {
+          "zh-cn": {
+            "name": "PHP 增强插件",
+            "desc": "测试描述",
+            "detail": "测试详尽",
+            "type": "应用程序"
+          },
+          "en": {
+            "name": "PHP-Extension",
+            "desc": "test desc",
+            "detail": "test detail",
+            "type": "Application"
+          }
+        }
+      },
+      "shellinabox": {
+        "version": "0.1",
+        "size": "60K",
+        "files": {
+          "icon.png": "e74f9f0505652749968662accc388987",
+          "config.conf": "2c8b24050e76758f403875c16f0efb01",
+          "shellinabox_lib.sh": "00d3d70471691d7edb65253d1d258a33",
+          "index.sh": "2595de2f76259f9ec912520ed0dae8f2",
+          "i18n/zh-cn/i18n.conf": "17c69cbad51bd8472bc0b19abc93d7ba",
+          "i18n/en/i18n.conf": "5c0d132fad5ae3b791c3e606b1a559ae",
+          "S990shellinabox.init": "00b3e0eca700ad7b24daf5b3d06c14c5",
+          "shellinabox.httpd_proxy": "113c7c54ef06c76399e812db0973c9db"
+        },
+        "i18n": {
+          "zh-cn": {
+            "name": "终端",
+            "desc": "测试描述",
+            "detail": "测试详尽",
+            "type": "应用程序"
+          },
+          "en": {
+            "name": "Shellinabox",
+            "desc": "test desc",
+            "detail": "test detail",
+            "type": "Application"
+          }
+        }
+      },
+      "curl": {
+        "version": "0.1",
+        "size": "52K",
+        "files": {
+          "curl_lib.sh": "d38a43cdc4744bce89d91d8bb22ca9f0",
+          "icon.png": "b78e743d750a20ef0cb01830f93341a6",
+          "curl.conf": "782b612108498a9a7d4d5b08176209a1",
+          "config.conf": "85c6a5aa89a7f85ee7678b9d4c51d6e2",
+          "index.sh": "745d9b06e2b5a0bfc3f60cdaa60caf48",
+          "i18n/zh-cn/i18n.conf": "74ee0c27badd2b3d529379a7df816af5",
+          "i18n/en/i18n.conf": "0c6841a91d0c8b8e59e3b9020fb871a7"
+        },
+        "i18n": {
+          "zh-cn": {
+            "name": "cURL",
+            "desc": "测试描述",
+            "detail": "测试详尽",
+            "type": "应用程序"
+          },
+          "en": {
+            "name": "cURL",
+            "desc": "test desc",
+            "detail": "test detail",
+            "type": "Application"
+          }
+        }
+      },
+      "mysql": {
+        "version": "0.11",
+        "size": "68K",
+        "files": {
+          "icon.png": "ac34719ae397713f1ef629861255cdee",
+          "config.conf": "d0889bd0e2e9f928fffea5cca12cc93f",
+          "mysql_lib.sh": "2ab301a2227becb21e51e166bb74695e",
+          "index.sh": "9b99cb28a032494878f3c895364a74a0",
+          "i18n/zh-cn/i18n.conf": "af5a7d03df1cbafce09ed59b07ced2a6",
+          "i18n/en/i18n.conf": "420ae5bf4270618ada6d15b58844bc62",
+          "S101mysql.init": "5f51feabe0d0a44db2637acea05a3717"
+        },
+        "i18n": {
+          "zh-cn": {
+            "name": "Mysql数据库",
+            "desc": "Mysql 服务",
+            "detail": "Mysql 服务程序",
+            "type": "应用程序"
+          },
+          "en": {
+            "name": "Mysql",
+            "desc": "Mysql server",
+            "detail": "Mysql server program",
+            "type": "Application"
+          }
+        }
+      },
+      "net-diagnostics": {
+        "version": "0.1",
+        "size": "48K",
+        "files": {
+          "icon.png": "0d5064e2b193262585cf66c8ca66db8d",
+          "config.conf": "4f586c1cc97c8b31f1301dac76cd0844",
+          "index.sh": "13e69e147cb7e4e2550f8aa422b4e59c",
+          "net_diag.sh": "7aa1336282d193bd46e4c2d3631d2f55",
+          "i18n/zh-cn/i18n.conf": "3d9f665a7f7eb6b6d32f76a72fb501af",
+          "i18n/en/i18n.conf": "1dd57b771f97276270f7c77c31bbe2ad"
+        },
+        "i18n": {
+          "zh-cn": {
+            "name": "网络诊断",
+            "desc": "网络诊断",
+            "detail": "网络诊断,包括 ping traceroute nslookup",
+            "type": "应用程序"
+          },
+          "en": {
+            "name": "Net Diagnostics",
+            "desc": "Network Diagnosticsment",
+            "detail": "Network Diagnostics,with ping traceroute nslookup",
+            "type": "Application"
+          }
+        }
+      }
+    },
+    "Network": {
+      "shadowsocks-libev": {
+        "version": "0.1",
+        "size": "100K",
+        "files": {
+          "transparent_proxy_dest.conf": "694ea1d720d960a7b0885a5d3928eeae",
+          "icon.png": "d7cb733603d0864041d6b36eae2ff7e7",
+          "F250shadowsocks_server.fw": "f5d0028a50a0ec378cb2d7dc8ef89e73",
+          "config.conf": "de7797d52b6b763f0e5250692cc8b9db",
+          "index.sh": "1d2a7d8d8ca4f6e0a960ef55aaa54fc7",
+          "i18n/zh-cn/i18n.conf": "f7f3f07f5642fb93ea3ac3cc3d9be167",
+          "i18n/en/i18n.conf": "bc7c7be95f0e124be37f20a37b68e3c4",
+          "shadowsocks_libev_lib.sh": "e72b70ccddd39a09be03169c888c0123",
+          "S702shadowsocks_redir.init": "2b2f62f8b6b0726566016a14e6e24769",
+          "S700shadowsocks_server.init": "d89977ad76f8dfcb9603408260425f74",
+          "S701shadowsocks_local.init": "a7821adfa00e09a25b47f1206616deee",
+          "shadowsocks_libev.json": "e7a2893616b299c6c50f74f3d8ceb3f6"
+        },
+        "i18n": {
+          "zh-cn": {
+            "name": "Shadowsocks-libev",
+            "desc": "测试描述",
+            "detail": "测试详尽",
+            "type": "Network"
+          },
+          "en": {
+            "name": "Shadowsocks-libev",
+            "desc": "test desc",
+            "detail": "test detail",
+            "type": "Network"
+          }
+        }
+      },
+      "nginx": {
+        "version": "0.1",
+        "size": "288K",
+        "files": {
+          "cron_log_split.sh": "925e5bcb2b425bdba8fdbbe0ca478195",
+          "cron_log_split.conf": "14f74f1156901e3f8823f20161cfcbc3",
+          "nginx_lib.sh": "4abf101e9b9bcc39ddf9fa8ba9fd0f24",
+          "icon.png": "3638d6ba14ca423d449295b34effcf37",
+          "log_tpl.sh": "3851e1816d927bcc66df7f83d357f859",
+          "base_setting.sh": "ee75feb329a7d9f20f35db13b163ff3a",
+          "rewrite/ecshop.conf": "d14c7de2a45b9f15143afe228b742c98",
+          "rewrite/SHOPEX.conf": "4c7f802b005c9f126146764d3ede25ce",
+          "rewrite/jishigou.conf": "c54b5842f193e0158194737430838915",
+          "rewrite/SaBlog.conf": "b09e7a865e128e95ab9bbbc362430cbf",
+          "rewrite/magento.conf": "fa23987145f9743b597b9e34e72101dc",
+          "rewrite/PHPCMS.conf": "7c9515799a78861dad9ddb1dfaa83e01",
+          "rewrite/discuz.conf": "81692472d4707e059d63ce0154098598",
+          "rewrite/wordpress.conf": "405ba252ef96d2332544cf537ede349f",
+          "rewrite/HDWIKI.conf": "a5c48b48eeb9a0c68964a2b05652ef57",
+          "rewrite/typecho.conf": "342b2ae297957184fce72ffc0613a4dc",
+          "rewrite/anwsion.conf": "2ea18ac92a4f8bf7dedee9d4dcadade0",
+          "rewrite/phpwind.conf": "c80593ad98ed35d09197ddeff4c0fb10",
+          "config.conf": "de7797d52b6b763f0e5250692cc8b9db",
+          "imgs/lang_jsp.png": "5973f12aae45af35e573992ee146e67f",
+          "imgs/lang_pl.png": "9abb8de994f4e1f2f4b5e09d3571fb04",
+          "imgs/lang_html.png": "0c9f6bf0c68cda7cca9286704d62791f",
+          "imgs/lang_php.png": "7a7bcef065c359f2f8effd2d9acd1abf",
+          "nginx_log_split.sh": "b50ff3d36baeae428bcfaeea4d9713a1",
+          "log_tpl/proxy": "040205c9c75b1bad027c81d868e8ddb0",
+          "log_tpl/main": "ddca2893aedc5035cc614285721de8e8",
+          "conf_tpl/host_others_tpl/010others.tpl": "1aaad7722ef557b1efbb812f7fc83773",
+          "conf_tpl/host_cgi_fgi_tpl/010php_tcp.tpl": "30747c64fa8eca375e52e84ac7ad074e",
+          "conf_tpl/host_file_cache_tpl/010gif_jpg_jpeg_png_bmp_swf.tpl": "2a44a47f5a28d7b1d69e9bd3cd37dfb6",
+          "conf_tpl/host_file_cache_tpl/020js_css.tpl": "9819779037b73f15bfb207e332d94616",
+          "index.sh": "88ebf4739beae6e39eb1d5c451d6b598",
+          "i18n/zh-cn/i18n.conf": "12234d93862b2751e37ba902ebff4239",
+          "i18n/en/i18n.conf": "3803fd9e5ea23c6c00d63877ac06bf2d",
+          "vhost.sh": "9b36fc24451cdf94ece490745b2a25de"
+        },
+        "i18n": {
+          "zh-cn": {
+            "name": "Nginx web服务",
+            "desc": "Nginx web 服务",
+            "detail": "Nginx web 服务程序",
+            "type": "网络"
+          },
+          "en": {
+            "name": "Nginx",
+            "desc": "Nginx web server",
+            "detail": "Nginx web server program",
+            "type": "Network"
+          }
+        }
+      },
+      "resolv-conf-edit": {
+        "version": "0.1",
+        "size": "40K",
+        "files": {
+          "icon.png": "0a70fa0a6195963fd5a587778c3c3fa7",
+          "config.conf": "a56bc88512eb91b4aa322c0de54b215b",
+          "index.sh": "0bf7335beaa5dc96236e147e14030fe5",
+          "i18n/zh-cn/i18n.conf": "66defa09a654812306e89724f430fbb1",
+          "i18n/en/i18n.conf": "dce1f846f0c3c55260ee42156cc29ecc"
+        },
+        "i18n": {
+          "zh-cn": {
+            "name": "resolv.conf文件编辑",
+            "desc": "编辑hosts文件",
+            "detail": "编辑服务器hosts文件",
+            "type": "网络"
+          },
+          "en": {
+            "name": "resolv.conf file edit",
+            "desc": "Edit hosts file",
+            "detail": "Edit the server hosts file",
+            "type": "Network"
+          }
+        }
+      },
+      "pptp-l2tp-server": {
+        "version": "0.1",
+        "size": "100K",
+        "files": {
+          "pptp-l2tp-server.json": "4329d1d8673c5b2baecbad101629c7e9",
+          "S220ipsec.init": "82294bb379e0a5d0e2cc773bf585d53d",
+          "S230xl2tpd.init": "34480faabe556ea6cfc864dc4b9ad8d9",
+          "S210pptpd.init": "2924c00c2178d90568b673e010b531bc",
+          "icon.png": "2d051e68ed158947f251b7e6d1735785",
+          "config.conf": "de7797d52b6b763f0e5250692cc8b9db",
+          "index.sh": "e22e7cc74de9dff8831798530911a70d",
+          "i18n/zh-cn/i18n.conf": "84689324157f64f8691bdb2ca15c8774",
+          "i18n/en/i18n.conf": "4f493785d40904659c69eb166303c13a",
+          "F200pptp-l2tp-server.fw": "9f2ca718ad86d1b36822565e23d66216",
+          "pptp_l2tp_server_lib.sh": "4c2f2db8287572a76da0ba74cb6c6050"
+        },
+        "i18n": {
+          "zh-cn": {
+            "name": "PPTP-L2TP服务",
+            "desc": "测试描述",
+            "detail": "测试详尽",
+            "type": "网络"
+          },
+          "en": {
+            "name": "PPTP-L2TP Server",
+            "desc": "test desc",
+            "detail": "test detail",
+            "type": "Network"
+          }
+        }
+      },
+      "aria2": {
+        "version": "0.1",
+        "size": "548K",
+        "files": {
+          "icon.png": "ee68dddbb6e097987266077d681aa683",
+          "aria2.session": "d41d8cd98f00b204e9800998ecf8427e",
+          "css/bootstrap.min.css": "24077a7b6605ee8c2a44f3cb71cc7998",
+          "css/main.css": "70b485aa6074d41f4080839dcd64cbf5",
+          "css/bootstrap-responsive.min.css": "18ed48e7f042c4e06d38103e6d302bac",
+          "config.conf": "a56bc88512eb91b4aa322c0de54b215b",
+          "index.sh": "d578b0a74ebbdc51f766b0ebceb9d040",
+          "aria2.httpd_modules": "ce23e847f8bbd415080ffd48b01e35a2",
+          "i18n/zh-cn/i18n.conf": "fe692f88a0effd25c0217a32b50b90e4",
+          "i18n/en/i18n.conf": "a90318f185324668a2e53086725f1b36",
+          "yaaw.cgi": "dff4a7a6153ed59bf3b16e810cb661a5",
+          "aria2.httpd_proxy": "88f62302f92c02651a2d8051cf449984",
+          "S800aria2c.init": "88d56fb3fbeb65b0dd0120c44543535d",
+          "js/jquery-1.7.2.min.js": "b8d64d0bc142b3f670cc0611b0aebcae",
+          "js/jquery.base64.min.js": "0e0645f8b1c2b9e45470add2df1214b4",
+          "js/bootstrap.min.js": "71e1bf948efa4f08605d8d555c96bad9",
+          "js/peerid.js": "e997a3a0c124427b882b140a09fcfa99",
+          "js/jquery.Storage.js": "4cbcd26e8b274b3bebcd581c720c1a5a",
+          "js/mustache.js": "520533cc03b38f0daa6d80abe468858b",
+          "js/aria2.js": "471e3566d53b1d65e4d1693a4ee49e0f",
+          "js/jquery.jsonrpc.js": "1a600fce436a210141c1b73e8b3117b7",
+          "js/yaaw.js": "ca8f7aa48c2bcd5ded930f9474409d0e",
+          "aria2.conf": "4ccd083153bfa2927fb7c9c07be49a25",
+          "img/glyphicons-halflings.png": "74b801ed8644409a1d166bbf33ac3d95",
+          "img/glyphicons-halflings-white.png": "9bbc6e9602998a385c2ea13df56470fd",
+          "img/favicon.ico": "8858a06c2f263a47c7c5b432a2be5dd9",
+          "aria2_lib.sh": "b0d1e5fd0a3459352017e590c0191a95"
+        },
+        "i18n": {
+          "zh-cn": {
+            "name": "Aria2",
+            "desc": "Aria2 下载利器",
+            "detail": "Aria2是一个Unix下支持多线程、多源地址的下载利器",
+            "type": "网络"
+          },
+          "en": {
+            "name": "Aria2",
+            "desc": "Aria2 downloader",
+            "detail": "A powerfull downloader",
+            "type": "Network"
+          }
+        }
+      },
+      "vsftpd": {
+        "version": "0.1",
+        "size": "152K",
+        "files": {
+          "vsftpd_extra.conf": "0a01ddbca767c1cac92247b5b9869b42",
+          "vsftpd_lib.sh": "ca1e401168cc59a864e7ff9da6253fbc",
+          "vsftpd_base.conf": "b57fc93082dd0a812a5c183a0e974dec",
+          "icon.png": "fd4a2ab1d3f5d93eab203fdb125c867b",
+          "S990vsftpd.init": "030e65055d4a8492930dcad6bcb46bab",
+          "config.conf": "de7797d52b6b763f0e5250692cc8b9db",
+          "libs/server_setting.sh": "97a3bb167e4e2223bbc566220557450c",
+          "libs/pam_setting.sh": "3aadbb6219433ac959d6f36417239b88",
+          "libs/security_setting.sh": "a9c6d6b8dadb9e1aa3ba64caf4e92551",
+          "libs/access_setting.sh": "3946b34367570248c7382e73468dd629",
+          "libs/transfer_setting.sh": "4a432d13bbf2efc54eba7a6ed62005a4",
+          "libs/infomation_setting.sh": "c0c3a3976089329b06343c03ad44f811",
+          "libs/server_performance_setting.sh": "8e9a1c8005655947287aa144b55e5ed4",
+          "libs/global_setting.sh": "04d1057ea0b021bf0e14a9d0a5e82a21",
+          "libs/local_user_setting.sh": "49d9731832b9c1ae8c072c485345dd41",
+          "libs/timeout_setting.sh": "80985549a5006c771d0aaa398d49dfd6",
+          "libs/path_setting.sh": "66f5bc741340fbd287733766f3f55cdc",
+          "libs/file_setting.sh": "4ed489b7873d615bf25b2d18577a04bb",
+          "libs/anonymous_setting.sh": "99408f3d84bbd88fb8e7d991479f13b2",
+          "libs/user_options_setting.sh": "eafdb5f7c70d1155ba3b868634247967",
+          "vsftpd_setting.conf": "84e59e8a9cdcaf5e50fbb51c52bd7f9b",
+          "index.sh": "cacefa91f9b31149f8bbaee3631b6cf4",
+          "i18n/zh-cn/i18n.conf": "ac941f81e48413078f89c394a4044f3d",
+          "i18n/en/i18n.conf": "16f33fe679bdb945aad80dbf5cb9a4cf",
+          "F210vsftpd-server.fw": "d0b8fd1d0156a9db353a42d43636861f"
+        },
+        "i18n": {
+          "zh-cn": {
+            "name": "vsftpd",
+            "desc": "测试描述",
+            "detail": "测试详尽",
+            "type": "网络"
+          },
+          "en": {
+            "name": "vsftpd",
+            "desc": "test desc",
+            "detail": "test detail",
+            "type": "Network"
+          }
+        }
+      },
+      "dnsmasq": {
+        "version": "0.1",
+        "size": "72K",
+        "files": {
+          "icon.png": "51da875285e95a02e87433a09fde8a5f",
+          "dnsmasq_lib.sh": "807ea52aedbbe5cc31dd039e3eb47171",
+          "dnsmasq_setting.conf": "84e59e8a9cdcaf5e50fbb51c52bd7f9b",
+          "config.conf": "de7797d52b6b763f0e5250692cc8b9db",
+          "index.sh": "70e15773ba0eaf90d8460af993e660ee",
+          "dnsmasq.d/test.conf": "f3ae5691943bcb5c3c1da923e181ba47",
+          "i18n/zh-cn/i18n.conf": "6e9227ffef1c9927eb4014e145f79b54",
+          "i18n/en/i18n.conf": "174bf660cb93f9b3ddd84fb497931747",
+          "dnsmasq_base.conf": "a2773835c648a61fb509e743508e52d1",
+          "S390dnsmasq.init": "85dceed8c2db8e66a3ffe964344beea6"
+        },
+        "i18n": {
+          "zh-cn": {
+            "name": "DNSmasq",
+            "desc": "测试描述",
+            "detail": "测试详尽",
+            "type": "网络"
+          },
+          "en": {
+            "name": "DNSmasq",
+            "desc": "test desc",
+            "detail": "test detail",
+            "type": "Network"
+          }
+        }
+      },
+      "dnscrypt-proxy": {
+        "version": "0.1",
+        "size": "60K",
+        "files": {
+          "dnscrypt_proxy_lib.sh": "4daf085a3a09f7b2b150102c7a1384a3",
+          "icon.png": "231179e6cdc3d16f2b725d56218c3780",
+          "config.conf": "de7797d52b6b763f0e5250692cc8b9db",
+          "S400dnscryptc.init": "ee18d774e6e40051bb942f2d7e29045f",
+          "index.sh": "87258f3e6b965e542bdec8c8f17cca47",
+          "i18n/zh-cn/i18n.conf": "193deaba3d8ea799c891748c447d790f",
+          "i18n/en/i18n.conf": "2b1891db8650b27c9482b41b838616b6"
+        },
+        "i18n": {
+          "zh-cn": {
+            "name": "DNScrypt-proxy",
+            "desc": "测试描述",
+            "detail": "测试详尽",
+            "type": "网络"
+          },
+          "en": {
+            "name": "DNScrypt-proxy",
+            "desc": "test desc",
+            "detail": "test detail",
+            "type": "Network"
+          }
+        }
+      },
+      "dns-fix": {
+        "version": "0.1",
+        "size": "188K",
+        "files": {
+          "root.cron": "b09b40fbe1aa12f1b026f3bad27c74e3",
+          "icon.png": "662a18cfe3a46df8d8abad3f5434e982",
+          "config.conf": "e5cdbe9be5218724b686b972e738c0f8",
+          "S501dns-fix.init": "4d3ae95799d6602a6e9f341e398d8d7c",
+          "domainlist.txt": "45600597f50b8bfa7b00e491f7f6e886",
+          "index.sh": "00055a93eff0e6e2c17b568cbd98618b",
+          "i18n/zh-cn/i18n.conf": "85e251c14791939fd72432254ab922ec",
+          "i18n/en/i18n.conf": "2dbb970fc2b5fb42c24ff597de5c8a85"
+        },
+        "i18n": {
+          "zh-cn": {
+            "name": "DNS 补全",
+            "desc": "解析某些DNS服务器不能解析的域名",
+            "detail": "在某些DNS服务器不能解析某些域名的情况下,连接DNScrypt-proxy解析这些域名",
+            "type": "网络"
+          },
+          "en": {
+            "name": "DNS Fix",
+            "desc": "Work with some DNS Server Lose record",
+            "detail": "Work with some DNS Server Lose record",
+            "type": "Network"
+          }
+        }
+      },
+      "brand-info": {
+        "version": "0.1",
+        "size": "44K",
+        "files": {
+          "icon.png": "2c30d0369d43f71fc551fc94fce55992",
+          "config.conf": "a56bc88512eb91b4aa322c0de54b215b",
+          "brand-info.conf": "cee801c6e642037265a8d2145d57ced6",
+          "index.sh": "72bf6382b7dab53be479c57dbde62f16",
+          "i18n/zh-cn/i18n.conf": "40d9bc36850ab4d5e54e0731a5c8103d",
+          "i18n/en/i18n.conf": "001128fb583e994604b6f5dfa8ff7013"
+        },
+        "i18n": {
+          "zh-cn": {
+            "name": "带宽显示管理",
+            "desc": "首页带宽显示设置",
+            "detail": "首页带宽显示设置",
+            "type": "网络"
+          },
+          "en": {
+            "name": "Brand info",
+            "desc": "Setting of display brandwidth percent in home index",
+            "detail": "Setting of display brandwidth percent in home index",
+            "type": "Network"
+          }
+        }
+      }
+    }
+  }
+}
