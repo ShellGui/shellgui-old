@@ -217,6 +217,11 @@ $Tip
 <div class="col-md-12" id="ssl_manager">
 <table class="table">
 <legend>SSL Manager</legend>
+<script>
+\$(function () { 
+    \$("[data-toggle='popover']").popover(); 
+});
+</script>
 EOF
 ssl_list=`ls -l /data/ssl/ | grep "^d" | awk {'print $NF'}`
 if
@@ -226,7 +231,7 @@ then
 for ssl_name in $ssl_list
 do
 cat <<EOF
-<tr><td>/data/ssl/${ssl_name}</td><td>
+<tr><td><a data-toggle="popover" data-placement="focus" title="${ssl_name} SSL Detail" data-html="true" data-content="<pre>`find /data/ssl/${ssl_name}`</pre>" data-original-title="SSL Detail">/data/ssl/${ssl_name}</a></td><td>
 <a class="btn btn-primary" href="/index.cgi?app=ssl-gen&action=download&ssl_name=${ssl_name}" type="button">$_LANG_Download</a>
 <a class="btn btn-primary" href="/index.cgi?app=ssl-gen&server=${ssl_name}" type="button">$_LANG_Edit</a>
 <a class="btn btn-danger" onclick="del_ssl('${ssl_name}');"  type="button">$_LANG_Del</a>
