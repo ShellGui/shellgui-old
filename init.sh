@@ -205,7 +205,7 @@ install_ubuntu_depends()
 {
 apt-get reomove -y jq
 apt-get update --fix-missing || exit 1
-apt-get install -y build-essential autoconf openssl libssl-dev libpcre3 libpcre3-dev curl wget zlib1g.dev tzdata iptables-dev bridge-utils unzip || exit 1
+apt-get install -y build-essential autoconf openssl libssl-dev libpcre3 libpcre3-dev curl wget zlib1g.dev tzdata iptables-dev bridge-utils unzip pkg-config || exit 1
 # uml-utilities
 
 }
@@ -213,7 +213,7 @@ install_debian_depends()
 {
 apt-get remove -y jq
 apt-get update --fix-missing || exit 1
-apt-get install -y build-essential autoconf openssl libssl-dev libpcre3 libpcre3-dev curl wget zlib1g.dev tzdata iptables-dev bridge-utils unzip || exit 1
+apt-get install -y build-essential autoconf openssl libssl-dev libpcre3 libpcre3-dev curl wget zlib1g.dev tzdata iptables-dev bridge-utils unzip pkg-config || exit 1
 # uml-utilities
 }
 build_proccgi()
