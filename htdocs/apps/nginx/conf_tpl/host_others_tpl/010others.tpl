@@ -1,0 +1,1 @@
+<input type="button" class="btn btn-primary" onclick="insertAtCursor(document.getElementById('host_extra_config'),'\nlocation /NginxStatus {\nstub_status on;\naccess_log on;\nauth_basic_user_file conf/htpasswd;\n}\n')" value="NginxStatus" />

@@ -1,0 +1,38 @@
+#!/bin/sh
+enable=0
+style="white-on-black"
+start()
+{
+[ -z "$DOCUMENT_ROOT" ] && export DOCUMENT_ROOT=`main.sbin where_DOCUMENT_ROOT`
+if
+[ -x /usr/local/shellinabox/bin/shellinaboxd ]
+then
+main.sbin notice option="add" \
+				read="0" \
+				desc="_NOTICE_shellinabox_binary_need_install" \
+				detail="_NOTICE_shellinabox_binary_need_install" \
+				uniqid="shellinabox_binary_need_install" \
+				time="" \
+				ergen="red" \
+				dest="shellinabox" \
+				dest_type="app" >/dev/null 2>&1
+fi
+if
+[ $enable -eq 1 ]
+then
+killall shellinaboxd || pkill shellinaboxd
+killall lighttpd || pkill lighttpd
+$DOCUMENT_ROOT/../sbin/lighttpd -f $DOCUMENT_ROOT/../etc/lighttpd/lighttpd.conf
+/usr/local/shellinabox/bin/shellinaboxd --disable-ssl $([ "$style" = "white-on-black" ] && echo '--css /usr/local/shellinabox/share/doc/shellinabox/white-on-black.css') -u root -g root --service /shellinabox:SSH  --localhost-only -b
+
+else
+killall shellinaboxd || pkill shellinaboxd
+fi
+#ps aux | grep -v grep | grep "masq.*shellinabox.conf" || start
+#exit
+}
+stop()
+{
+killall shellinaboxd || pkill shellinaboxd
+}
+[ -z "$1" ] && start || $1

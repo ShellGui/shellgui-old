@@ -1,0 +1,22 @@
+{
+  "pptp": {
+    "local_ip": "10.10.1.1",
+    "ip_range": "10.10.1.2-254",
+    "ms_dns": "8.8.8.8 8.8.4.4",
+    "dest": "wan "
+  },
+  "l2tp": {
+    "local_ip": "10.10.2.1",
+    "ip_range": "10.10.2.2-10.10.2.254",
+    "ms_dns": "8.8.8.8 8.8.4.4",
+    "combine_dev": "eth0",
+    "ipsec_share_key": "YourSharedSecret",
+    "dest": "wan "
+  },
+  "pptp_users": {
+    "xx": "xx"
+  },
+  "l2tp_users": {
+    "xx": "xx"
+  }
+}

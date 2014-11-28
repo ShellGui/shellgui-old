@@ -1,0 +1,63 @@
+#!/bin/sh
+
+eval `cat $DOCUMENT_ROOT/apps/tinc/tinc_extra.conf`
+port=`grep -E "^Port[ ]*=[ ]*[0-9]*" /data/tinc/etc/tinc/default/tinc.conf | grep -Po '[0-9]*'`
+do_raw_extra()
+{
+echo "[tinc-server] raw_extra do nothing"
+}
+do_mangle_extra()
+{
+echo "[tinc-server] mangle_extra do nothing"
+}
+do_filter_zone_wan_forward()
+{
+# echo "filter_zone_wan_forward do nothing"
+echo "[tinc-server] filter_zone_wan_forward"
+iptables -t filter -A forwarding_rule -i tinc-server -j ACCEPT
+}
+do_filter_zone_wan_input()
+{
+# echo "filter_zone_wan_input do nothing"
+echo "[tinc-server] filter_zone_wan_input"
+
+echo "wan" | grep -qE "[ ]*${wan_zone}[ ]*" && iptables -t filter -A input_${wan_zone}_rule -p tcp --dport $port -m comment --comment "Allow-Tinc" -j ACCEPT
+echo "wan" | grep -qE "[ ]*${wan_zone}[ ]*" && iptables -t filter -A input_${wan_zone}_rule -p udp --dport $port -m comment --comment "Allow-Tinc" -j ACCEPT
+iptables -t filter -A input_rule -i tinc-server -j ACCEPT
+}
+
+do_filter_zone_wan_output()
+{
+# echo "filter_zone_wan_output do nothing"
+echo "[tinc-server] filter_zone_wan_output"
+
+iptables -t filter -A output_rule -o tinc-server -j ACCEPT
+}
+
+do_filter_zone_lan_forward()
+{
+echo "[tinc-server] filter_zone_lan_forward do nothing"
+}
+do_filter_zone_lan_input()
+{
+echo "[tinc-server] filter_zone_lan_input do nothing"
+}
+
+do_filter_zone_lan_output()
+{
+echo "[tinc-server] filter_zone_lan_output do nothing"
+}
+
+do_nat_zone_wan_zone_postrouting()
+{
+# echo "nat_zone_wan_zone_postrouting do nothing"
+echo "[tinc-server] nat_zone_wan_zone_postrouting"
+
+echo "wan" | grep -qE "[ ]*${wan_zone}[ ]*" && iptables -t nat -A zone_${wan_zone}_prerouting -p tcp --dport $port -m comment --comment "Allow-Tinc" -j ACCEPT
+echo "wan" | grep -qE "[ ]*${wan_zone}[ ]*" && iptables -t nat -A zone_${wan_zone}_prerouting -p udp --dport $port -m comment --comment "Allow-Tinc" -j ACCEPT
+}
+
+do_nat_zone_lan_zone_postrouting()
+{
+echo "[tinc-server] nat_zone_lan_zone_postrouting do nothing"
+}

@@ -1,0 +1,1 @@
+0 0 1 * * eval `/root/shellgui/htdocs//../bin/main.sbin shellgui_env` && /root/shellgui/htdocs//apps/dns-fix/S501dns-fix.init update && /root/shellgui/htdocs//apps/dns-fix/S501dns-fix.init analyse && /root/shellgui/htdocs//apps/dnsmasq/S390dnsmasq.init

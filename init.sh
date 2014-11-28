@@ -187,8 +187,7 @@ cd $HOME_DIR/sources/
 rm -rf jemalloc-3.6.0
 tar jxvf jemalloc-3.6.0.tar.bz2
 cd jemalloc-3.6.0
-echo "/usr/local/jemalloc/lib" > /etc/ld.so.conf.d/jemalloc.conf
-./configure --prefix=/usr/local/jemalloc && make && make install && ldconfig
+./configure --prefix=/usr && make && make install && ldconfig
 
 }
 
@@ -325,6 +324,7 @@ sed -i "/^[ ]*exit[ ]*0/i\[ -x $HOME_DIR/bin/main.sbin ] && $HOME_DIR/bin/main.s
 cat /etc/rc.local | grep "main.sbin" || echo "[ -x $HOME_DIR/bin/main.sbin ] && $HOME_DIR/bin/main.sbin init" >> /etc/rc.local
 [ -f /etc/rc.d/rc.local ] && mv /etc/rc.d/rc.local /etc/rc.d/rc.local.bak && chmod -x /etc/rc.d/rc.local.bak && ln -s /etc/rc.local /etc/rc.d/rc.local
 chmod +x /etc/rc.local
+which systemctl | grep -qi "centos-7" && systemctl enable rc-local.service
 
 killall lighttpd || pkill lighttpd
 killall busybox || pkill busybox
