@@ -1,1 +1,0 @@
-		<input type="button" class="btn btn-primary" onclick="insertAtCursor(document.getElementById('host_extra_config'),'\nlocation ~ .*\\\.(gif|jpg|jpeg|png|bmp|swf)$\n{\nexpires        30d;\n}\n')" value="gif|jpg|jpeg|png|bmp|swf" />
