@@ -1,5 +1,24 @@
 #!/bin/sh
 # Copyright (C) 2006-2014 EK
+system_service()
+{
+. $DOCUMENT_ROOT/apps/sysinfo/sysinfo_lib.sh
+tar_service="$1"
+tar_action="$2"
+[ "$tar_action" = "enable" ] && do_action="start" || do_action="stop"
+if
+which systemctl >/dev/null 2>&1
+then
+systemctl $tar_action $tar_service".service"
+systemctl $do_action $tar_service".service"
+else
+[ "$tar_action" = "enable" ] && action="on" || action="off"
+echo "$OS" | grep -iq "centos" && chkconfig --add $tar_service && chkconfig $tar_service $action >/dev/null 2>&1 && service $tar_service $do_action
+echo "$OS" | grep -iq "ubuntu" && update-rc.d -f nginx defaults >/dev/null 2>&1 && service $tar_service $do_action
+echo "$OS" | grep -iq "debian" && update-rc.d -f nginx defaults >/dev/null 2>&1 && service $tar_service $do_action
+fi
+
+}
 shellgui_env()
 {
 which jq >/dev/null 2>&1
@@ -1490,5 +1509,8 @@ download
 ;;
 shellgui_env)
 shellgui_env
+;;
+system_service)
+system_service $2 $3
 ;;
 esac
