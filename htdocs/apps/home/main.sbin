@@ -1119,9 +1119,7 @@ create_admin_session()
 {
 SESSION_ID=`echo "$REMOTE_ADDR
 $HTTP_HOST
-$HTTP_USER_AGENT
-$HTTP_ACCEPT_LANGUAGE
-$HTTP_ACCEPT_ENCODING" | grep -Po [\w] | md5sum | cut -c 1-12`
+$HTTP_USER_AGENT" | md5sum | cut -c 1-12`
 head $DOCUMENT_ROOT/../tmp/admin_session.json | grep -q "{" && admin_session_str=`cat $DOCUMENT_ROOT/../tmp/admin_session.json`
 if
 [ -z "$admin_session_str" ]
@@ -1145,9 +1143,7 @@ check_admin_session()
 {
 SESSION_ID=`echo "$REMOTE_ADDR
 $HTTP_HOST
-$HTTP_USER_AGENT
-$HTTP_ACCEPT_LANGUAGE
-$HTTP_ACCEPT_ENCODING" | grep -Po [\w] | md5sum | cut -c 1-12`
+$HTTP_USER_AGENT" | md5sum | cut -c 1-12`
 LOGIN_TIME=`cat $DOCUMENT_ROOT/../tmp/admin_session.json | jq -r '.["'"$SESSION_ID"'"]["LOGIN_TIME"]'`
 [ $? -ne 0 ] && return 1
 [ -z "$LOGIN_TIME" ] && LOGIN_TIME=0
