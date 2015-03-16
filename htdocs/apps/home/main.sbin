@@ -151,7 +151,7 @@ app_services=`find $DOCUMENT_ROOT/apps -type f -maxdepth 2 | grep "\.init$" | gr
 for services in `echo "$app_services" | grep -vE "^/S99$|^/S100$"`
 do
 echo "Runing start ${services}"
-${services} start
+(${services} start)
 done
 }
 where_DOCUMENT_ROOT()
